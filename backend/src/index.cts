@@ -1,36 +1,33 @@
 const express = require("express")
 const mongoose = require("mongoose")
-const Product = require("./model/product.model.js")
+const Product = require("./model/product.model.cjs")
 
 
-port = 8080
+const port = 8080
 const app = express()
-
 
 app.use(express.json())
 
-app.get("/", (req, res) => {
-    res.send("Namaste")
-})
-
 
 //add a product
-app.post("/api/products", async (req, res) => {
+app.post("/api-todo/add", async (req: any, res: any) => {
     try {
         const product = await Product.create(req.body)
         res.status(200).send(product)
     } catch (error) {
-        res.status(500).send({ message: error.message })
+        const err = error as Error
+        res.status(500).send({ message: err.message })
     }
 })
 
 
 //get all product
-app.get("/api/products", async (req, res) => {
+app.get("/api/products", async (req: any, res: any) => {
     try {
         const products = await Product.find({})
         res.status(200).json(products)
-    } catch (err) {
+    } catch (error) {
+        const err = error as Error
         res.status(500).send({ message: err.message })
         console.log({ message: err.message })
     }
@@ -38,20 +35,21 @@ app.get("/api/products", async (req, res) => {
 
 
 //get a product
-app.get("/api/product/:id", async (req, res) => {
+app.get("/api/product/:id", async (req: any, res: any) => {
     try {
         const product = await Product.findById(req.params.id)
         res.status(200).json(product)
     } catch (error) {
-        res.status(500).send({ message: error.message })
-        console.log({ message: error.message })
+        const err = error as Error
+        res.status(500).send({ message: err.message })
+        console.log({ message: err.message })
     }
 
 })
 
 
 //update a product
-app.put("/api/product/:id", async (req, res) => {
+app.put("/api/product/:id", async (req: any, res: any) => {
     try {
         const product = await Product.findByIdAndUpdate(req.params.id, req.body)
         if (!product) {
@@ -59,15 +57,16 @@ app.put("/api/product/:id", async (req, res) => {
         }
         const updatedProduct = await Product.findById(req.params.id)
         res.status(200).json(updatedProduct)
-    } catch (error) {
-        res.status(500).send({ message: error.message })
-        console.log({ message: error.message })
+    } catch (error: unknown) {
+        const err = error as Error
+        res.status(500).send({ message: err.message })
+        console.log({ message: err.message })
     }
 })
 
 
 //delete a product
-app.delete("/api/product/:id", async (req, res) => {
+app.delete("/api/product/:id", async (req: any, res: any) => {
     try {
         const product = await Product.findByIdAndDelete(req.params.id)
         if (!product) {
@@ -75,7 +74,8 @@ app.delete("/api/product/:id", async (req, res) => {
         }
         res.status(200).json({ message: "Product deleted successfully" })
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        const err = error as Error
+        res.status(500).json({ message: err.message })
     }
 })
 

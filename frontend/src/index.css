@@ -1,2 +1,12 @@
-@tailwind base;
+/* @tailwind base; */
 @tailwind utilities;
+
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#root {
+    height: 100dvh;
+}
