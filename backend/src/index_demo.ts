@@ -1,7 +1,6 @@
 const express = require("express")
 const mongoose = require("mongoose")
-const Product = require("./model/product.model.cjs")
-
+const Todo = require("./model/todo.model.cjs")
 
 const port = 8080
 const app = express()
@@ -10,7 +9,7 @@ app.use(express.json())
 
 
 //add a product
-app.post("/api-todo/add", async (req: any, res: any) => {
+app.post("/todo-api/add", async (req: any, res: any) => {
     try {
         const product = await Product.create(req.body)
         res.status(200).send(product)

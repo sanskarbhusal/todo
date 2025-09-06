@@ -24,6 +24,5 @@ const ProductSchema = mongoose.Schema(
     timestamps: true
 }
 )
-console.log("fuck")
 const Product = mongoose.model("Product", ProductSchema)
 module.exports = Product
