@@ -1,56 +1,156 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"
+import LoadingSpinner from "../LoadingSpinner"
+import zod from "zod"
+
+
+
+const url = import.meta.env.VITE_url
 
 
 //type definitions
 type TodoItem = {
-    id: string
-    jsxElement: JSX.Element
-    removeTodoItem: (id: string) => void
+    _id: string
+    text: string
 }
+
 
 function App(): JSX.Element {
     let [inputText, setInputText] = useState("")
     let [list, setList] = useState<TodoItem[]>([])
+    let [loading, setLoading] = useState(true)
+    let [status, setStatus] = useState(0)
+    let [loadLimit, setLoadLimit] = useState(4)
+    useEffect(() => {
 
+        (async () => {
+            try {
+                const response = await fetch(`${url}/getTodoList?limit=${loadLimit}`)
+                if (!response.ok) {
+                    switch (response.status) {
+                        case 500:
+                            setStatus(500)
+                            throw Error(status.toString())
+                        case 400:
+                            setStatus(400)
+                            throw Error(status.toString())
+                        default:
+                            console.log("Default case in error response")
+                            break
+                    }
+                }
 
-    //Working
-    //Bug: Remove is removing all the items from the list
-    function removeTodoItem(id: string) {
-        setList(prev => {
-            const newList = prev.filter((item) => {
-                return item.id == id ? false : true
-            })
-            return newList
-        })
-    }
+                const responseJSON = await response.json()
 
+                const TodoItemShape = zod.looseObject({
+                    _id: zod.string(),
+                    text: zod.string(),
+                })
 
-    //Done.
-    function addTodoItem(text: string) {
-        if (text.trim() != "") {
-            const uniqueString = uuidv4()
-            const todoItem: TodoItem = {
-                id: uniqueString,
-                jsxElement: <TodoItem key={uniqueString} text={text} uuid={uniqueString} removeTodoItem={removeTodoItem} />,
-                removeTodoItem: removeTodoItem
+                const ResponseShape = zod.array(TodoItemShape)
+                const ResponseValidation = ResponseShape.safeParse(responseJSON)
+
+                if (!ResponseValidation.success) {
+                    throw Error("Invalid json from the server")
+                }
+
+                setList(responseJSON)
+                setLoading(false)
+
+            } catch (error) {
+                const err = error as Error
+                console.log(err.message)
+                setLoading(false)
             }
+        })()
+        console.log("useEffect")
+    }, [loadLimit])
+
+    //working
+    async function removeTodoItem(_id: string) {
+
+        const response = await fetch(`${url}/deleteTodoItem?_id=${_id}`, {
+            method: "DELETE",
+            // headers: {
+            //     "Content-Type": "application/json",
+            // },
+        })
+
+        try {
+            if (!response.ok) {
+                switch (response.status) {
+                    case 500:
+                        setStatus(500)
+                        throw Error(status.toString())
+                    case 400:
+                        setStatus(400)
+                        throw Error(status.toString())
+                    default:
+                        console.log("Default case in error response")
+                }
+            }
+
             setList(prev => {
-                return [...prev, todoItem]
+                const newList = prev.filter((item) => {
+                    return item._id === _id ? false : true
+                })
+                return newList
             })
+
+        } catch (error) {
+            const err = error as Error
+            console.log(err.message)
+
         }
 
     }
 
 
-    function List(): JSX.Element[] {
-        const jsxArray: JSX.Element[] = list.map((item) => {
-            return item.jsxElement
-        })
-        return jsxArray
-    }
+    //Done.
+    async function addTodoItem(text: string) {
+        if (text.trim() != "") {
 
+            const todoItem: TodoItem = {
+                _id: uuidv4(),
+                text
+            }
+
+            const response = await fetch(`${url}/addTodoItem`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(todoItem)
+            })
+
+            try {
+                if (!response.ok) {
+                    switch (response.status) {
+                        case 500:
+                            setStatus(500)
+                            throw Error(status.toString())
+                        case 400:
+                            setStatus(400)
+                            throw Error(status.toString())
+                        default:
+                            console.log("Default case in error response")
+                    }
+                }
+
+                setList(prev => {
+                    return [...prev, todoItem]
+                })
+
+            } catch (error) {
+                const err = error as Error
+                console.log(err.message)
+
+            }
+
+        }
+
+    }
 
     return (
         <div className="h-fit w-fit flex flex-col font-serif gap-2 " >
@@ -81,9 +181,18 @@ function App(): JSX.Element {
                 </button>
             </div>
             <div className="h-96 w-80 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-2 p-2 border border-solid shadow-lg">
-                <List />
+                {
+                    loading ? <LoadingSpinner size={30} /> : list.map((item) => {
+
+                        return <TodoItem key={item._id} text={item.text} uuid={item._id} removeTodoItem={removeTodoItem} />
+                    })
+                }
             </div>
-            <button>Load More</button>
+            <button
+                onClick={() => {
+                    setLoadLimit(prev => { return prev + 4 })
+                }}
+            >Load More</button>
         </div>
 
     )

@@ -1,20 +1,60 @@
 import { useState } from "react"
+import LoadingSpinner from "../LoadingSpinner"
+
+
+const url = import.meta.env.VITE_url
+
+
+type TextArea = {
+    disabled: boolean
+    updatePending: boolean
+    buttonText: string | JSX.Element
+}
 
 
 function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, removeTodoItem: (uuid: string) => void }) {
 
-
     let [id] = useState(uuid)
     let [newText, setNewText] = useState(text)
-    let [textArea, setTextArea] = useState({ readOnly: true, disabled: true })
+    let [textArea, setTextArea] = useState<TextArea>({ disabled: true, updatePending: false, buttonText: "edit" })
+    let [status, setStatus] = useState(0)
 
+
+    async function handleUpdateText() {
+
+        const response = await fetch(`${url}/editTodoItem?_id=${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: newText })
+        })
+
+        try {
+            if (!response.ok) {
+                switch (response.status) {
+                    case 500:
+                        setStatus(500)
+                        throw Error(status.toString())
+                    case 400:
+                        setStatus(400)
+                        throw Error(status.toString())
+                    default:
+                        throw Error("Didn't get any status code while updating todo text")
+                }
+            }
+
+            setTextArea(prev => ({ ...prev, updatePending: false, buttonText: "edit" }))
+
+        } catch (error) {
+            const err = error as Error
+            console.log(err.message)
+        }
+    }
 
     return (
         <div className=" w-full h-fit flex flex-row w-30 gap-2 bg-gray-100 shadow-inner border border-solid border-green-500" >
             <textarea className="w-full resize-none min-h-12 text-wrap overflow-y-auto overflow-x-hidden p-1 border-none disabled:text-black "
                 value={newText}
                 onChange={(e) => { setNewText(e.target.value) }}
-                readOnly={textArea.readOnly}
                 disabled={textArea.disabled}
             >
             </textarea>
@@ -31,19 +71,18 @@ function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, 
                 <button
                     className="h-6 self-center w-full"
                     onClick={() => {
-                        setTextArea((prev: typeof textArea) => {
-                            switch (prev.readOnly) {
-                                case true:
-                                    return { readOnly: false, disabled: false }
-                                case false:
-                                    return { readOnly: true, disabled: true, }
-                                default:
-                                    return { ...prev }
+                        setTextArea((prev) => {
+                            if (prev.disabled) {
+                                return { ...prev, disabled: false, buttonText: "update" }
+                            } else {
+                                handleUpdateText()
+                                return { ...prev, disabled: true, updatePending: true }
                             }
                         })
                     }}>
-                    {textArea.readOnly ? "edit" : "update"}
+                    {!textArea.updatePending ? textArea.buttonText : <LoadingSpinner size={15} />}
                 </button>
+
             </div>
 
         </div>
