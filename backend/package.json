@@ -4,8 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node dist/index.cjs",
+    "start": "tsc && node dist/index.js",
     "dev": "tsx watch --no-warnings --include \"src/**/*\" src/index.ts"
   },
   "author": "",
