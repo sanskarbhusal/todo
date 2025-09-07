@@ -4,4 +4,4 @@
 2. Typescript
 3. Tailwind v3
 ## Output
-![Todo UI](images/todo.png)
+![Todo UI](images/Todo.png)

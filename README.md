@@ -3,4 +3,4 @@
 **Sanskar Bhusal**
 
 ## Output
-![Todo UI](images/todo.png)
+![Todo UI](images/Todo.png)
