@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"
 import LoadingSpinner from "../LoadingSpinner"
+import SearchBox from "../SearchBox"
 import zod from "zod"
 
 
