@@ -2,22 +2,33 @@ import mongoose from "mongoose"
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
+import session from "express-session"
 import {
     addTodoItem,
     getTodoList,
     editTodoItem,
     deleteTodoItem,
-    search
+    search,
+    login
 } from "./controller/todo.controller.js"
 
 
 dotenv.config()
 const port = 8080
 const app = express()
+const sessionSecret = process.env.sessionSecret || "default secret"
 
 
 //middlewares
 app.use(express.json())
+app.use(session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 60000,
+    }
+}))
 app.use(cors({
     origin: process.env.allowedOrigin
 }))
@@ -37,6 +48,9 @@ app.delete("/todo-api/user/deleteTodoItem", deleteTodoItem)
 
 // search todo items
 app.get("/todo-api/user/search", search)
+
+//working: on authentication
+app.post("/todo-api/login", login)
 
 
 //making database connection

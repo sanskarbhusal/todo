@@ -147,7 +147,6 @@ const search = async (req: Request, res: Response) => {
 
     try {
         const searchKey = req.query.key
-        console.log(searchKey)
 
         const ret = await Todo.find({ text: { $regex: searchKey, $options: "i" } })
 
@@ -163,10 +162,49 @@ const search = async (req: Request, res: Response) => {
     }
 
 }
+
+
+const login = async (req: Request, res: Response) => {
+    if (req.session.visited) {
+        console.log("already visited")
+    } else {
+        console.log("First time visit. Saving session")
+        req.session.visited = true
+    }
+    res.status(200).json({ message: req.body })
+}
+
+
+const register = async (req: Request, res: Response) => {
+
+    const BodyShape = zod.object({
+        firstname: zod.string(),
+        lastname: zod.string(),
+        email: zod.email(),
+        password: zod.string()
+    })
+
+    const BodyValidation = BodyShape.safeParse(req.query)
+
+    if (!BodyValidation.success) {
+        return res.status(400).json({ message: "Invalid JSON payload." })
+    }
+
+    try {
+
+    } catch (error) {
+        const err = error as Error
+        console.log(err.message)
+        res.status(500).json({ message: "Database error" })
+    }
+}
+
+
 export {
     addTodoItem,
     getTodoList,
     editTodoItem,
     deleteTodoItem,
-    search
+    search,
+    login
 }
