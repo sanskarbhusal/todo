@@ -1,11 +1,20 @@
-import Todo from "../model/todo.model.js"
+import { User, TodoList } from "../model/todo.model.js"
 import zod from "zod"
+import bcrypt from "bcrypt"
 import type { Request, Response } from "express"
 
 
+//working:
 const addTodoItem = async (req: Request, res: Response) => {
 
+    // authentication
+    if (!req.session.authenticated) {
+        return res.status(400).json({ message: "Session not found. Auth required." })
+    }
+
+    //payload(Body) validation
     const TodoItemShape = zod.object({
+        email: zod.email({ pattern: zod.regexes.html5Email }),
         _id: zod.string(),
         text: zod.string(),
     })
@@ -16,9 +25,16 @@ const addTodoItem = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Invalid json/data." })
     }
 
+    //request processing
     try {
-        const ret = await Todo.create(req.body)
-        res.status(200).json({ message: "success" })
+        const todoList = await TodoList.findOne({ email: req.body.email })
+        if (todoList !== null) {
+            console.log(todoList)
+        } else {
+            console.log("Didn't find entry for:", req.body.email)
+        }
+        // res.status(200).json({ message: "success" })
+        res.send()
     } catch (error) {
         const err = error as Error
         console.log(err.message)
@@ -165,16 +181,63 @@ const search = async (req: Request, res: Response) => {
 
 
 const login = async (req: Request, res: Response) => {
-    if (req.session.visited) {
-        console.log("already visited")
-    } else {
-        console.log("First time visit. Saving session")
-        req.session.visited = true
+
+    // validation
+    const BodyShape = zod.object({
+        email: zod.email(),
+        password: zod.string()
+    })
+
+    const BodyValidation = BodyShape.safeParse(req.body)
+
+    if (!BodyValidation.success) {
+        return res.status(400).json({ message: "Invalid JSON payload." })
     }
-    res.status(200).json({ message: req.body })
+
+    // request handling
+    try {
+
+        req.session.authenticated ? console.log("Already logged in") : console.log("First time login")
+
+        let queryResult = await User.findOne({ email: req.body.email })
+
+        if (queryResult !== null) {
+
+            const match = await bcrypt.compare(req.body.password, queryResult.password)
+
+            if (!match) {
+                // 403:forbidden
+                res.status(403).json({ message: "Incorrect password!" })
+            } else {
+
+                const { firstname, lastname, email, displayPicture } = queryResult
+                const userSessionData = { firstname, lastname, email, displayPicture }
+
+                req.session.user = userSessionData
+                req.session.authenticated = true
+
+                res.status(200).json({ message: "success" })
+
+            }
+
+        } else {
+
+            //404: resource not found
+            res.status(404).json({ message: "Email not registered." })
+
+        }
+
+    } catch (error) {
+
+        const err = error as Error
+        console.log(err.message)
+        res.status(500).json({ message: "Database error" })
+
+    }
 }
 
 
+//done
 const register = async (req: Request, res: Response) => {
 
     const BodyShape = zod.object({
@@ -184,7 +247,7 @@ const register = async (req: Request, res: Response) => {
         password: zod.string()
     })
 
-    const BodyValidation = BodyShape.safeParse(req.query)
+    const BodyValidation = BodyShape.safeParse(req.body)
 
     if (!BodyValidation.success) {
         return res.status(400).json({ message: "Invalid JSON payload." })
@@ -192,10 +255,29 @@ const register = async (req: Request, res: Response) => {
 
     try {
 
+        let queryResult = await User.findOne({ email: req.body.email })
+
+        if (queryResult === null) {
+            const hashedPassword = await bcrypt.hash(req.body.password, 10)
+            const user = new User({ ...req.body, password: hashedPassword })
+            const todoList = new TodoList({
+                email: req.body.email,
+                todoList: []
+            })
+            await user.save()
+            await todoList.save()
+            res.status(200).json({ message: "success" })
+        } else {
+            //409: conflicting resource
+            res.status(409).json({ message: "Email already registered" })
+        }
+
     } catch (error) {
+
         const err = error as Error
         console.log(err.message)
         res.status(500).json({ message: "Database error" })
+
     }
 }
 
@@ -206,5 +288,6 @@ export {
     editTodoItem,
     deleteTodoItem,
     search,
-    login
+    login,
+    register
 }

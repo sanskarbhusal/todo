@@ -9,7 +9,8 @@ import {
     editTodoItem,
     deleteTodoItem,
     search,
-    login
+    login,
+    register
 } from "./controller/todo.controller.js"
 
 
@@ -26,7 +27,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 60000,
+        maxAge: 500000,
     }
 }))
 app.use(cors({
@@ -35,23 +36,25 @@ app.use(cors({
 
 
 // add todo
-app.post("/todo-api/user/addTodoItem", addTodoItem)
+app.post("/todo-api/addTodoItem", addTodoItem)
 
 // get todo list
-app.get("/todo-api/user/getTodoList", getTodoList)
+app.get("/todo-api/getTodoList", getTodoList)
 
 // edit text of todo item
-app.patch("/todo-api/user/editTodoItem", editTodoItem)
+app.patch("/todo-api/editTodoItem", editTodoItem)
 
 // remove a todo item
-app.delete("/todo-api/user/deleteTodoItem", deleteTodoItem)
+app.delete("/todo-api/deleteTodoItem", deleteTodoItem)
 
 // search todo items
-app.get("/todo-api/user/search", search)
+app.get("/todo-api/search", search)
 
-//working: on authentication
+// register user
+app.post("/todo-api/register", register)
+
+// login user
 app.post("/todo-api/login", login)
-
 
 //making database connection
 mongoose.connect("mongodb://myUserAdmin:admin@localhost:27017/todo?authSource=admin").then(() => {

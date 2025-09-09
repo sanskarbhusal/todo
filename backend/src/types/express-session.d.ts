@@ -1,7 +1,21 @@
 import "express-session"
 
+
+interface User {
+
+    firstname: string
+    lastname: string
+    email: string
+    displayPicture: string
+
+}
+
+
 declare module "express-session" {
+
     interface SessionData {
-        visited?: boolean
+        user?: User
+        authenticated?: boolean
     }
+
 }
