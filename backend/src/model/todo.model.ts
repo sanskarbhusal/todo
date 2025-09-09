@@ -48,7 +48,7 @@ const TodoItemSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-const TodoListsSchema = new mongoose.Schema({
+const UsersTodoListSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -60,5 +60,5 @@ const TodoListsSchema = new mongoose.Schema({
 
 
 const User = mongoose.model("User", UserSchema, "users")
-const TodoList = mongoose.model("UserTodoList", TodoListsSchema, "todoLists")
-export { User, TodoList }
+const UsersTodoList = mongoose.model("UserTodoList", UsersTodoListSchema, "usersTodoLists")
+export { User, UsersTodoList }

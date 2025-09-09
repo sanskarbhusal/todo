@@ -1,21 +1,24 @@
-import { User, TodoList } from "../model/todo.model.js"
+import { User, UsersTodoList } from "../model/todo.model.js"
 import zod from "zod"
 import bcrypt from "bcrypt"
 import type { Request, Response } from "express"
+import { v4 as uuidv4 } from "uuid"
 
 
-//working:
+//done
 const addTodoItem = async (req: Request, res: Response) => {
 
     // authentication
     if (!req.session.authenticated) {
-        return res.status(400).json({ message: "Session not found. Auth required." })
+        console.log("Session not found!")
+        // 403: forbidden
+        return res.status(403).json({ message: "Session expired" })
     }
 
-    //payload(Body) validation
+    console.log("Session found")
+
+    // payload(Body) validation
     const TodoItemShape = zod.object({
-        email: zod.email({ pattern: zod.regexes.html5Email }),
-        _id: zod.string(),
         text: zod.string(),
     })
 
@@ -26,26 +29,32 @@ const addTodoItem = async (req: Request, res: Response) => {
     }
 
     //request processing
+    const { email } = req.session
+    const { text } = req.body
+
     try {
-        const todoList = await TodoList.findOne({ email: req.body.email })
-        if (todoList !== null) {
-            console.log(todoList)
-        } else {
-            console.log("Didn't find entry for:", req.body.email)
-        }
-        // res.status(200).json({ message: "success" })
-        res.send()
+        const usersTodoList = await UsersTodoList.findOne({ email })
+        if (usersTodoList === null) return res.status(500).json({ message: "Query failed! Possibly a bug." })
+        const _id = uuidv4()
+        usersTodoList.todoList.push({ text, _id })
+        await usersTodoList.save()
+        res.status(200).json({ message: "success", todo_id: _id })
     } catch (error) {
         const err = error as Error
         console.log(err.message)
-        res.status(200).json({ message: "Database error" })
+        res.status(500).json({ message: "Database error" })
     }
-
 }
 
 
+// done
 const getTodoList = async (req: Request, res: Response) => {
 
+    // authentication
+    if (!req.session.authenticated) {
+        console.log("Session not found!")
+        return res.status(400).json({ message: "Session not found. Auth required." })
+    }
 
     //validation
     const QueryShape = zod.object({
@@ -60,22 +69,27 @@ const getTodoList = async (req: Request, res: Response) => {
 
     //request processing
     try {
-
+        const { email } = req.session
         const limit = req.query.limit as string //asserts limit key's type as string
 
-        let todoList
-        if (limit == "-1") {
-            //no limit on query result
-            todoList = await Todo.find({}).sort({ createdAt: 1 })
-        } else {
-            //set limit on query result
-            todoList = await Todo.find({}).sort({ createdAt: 1 }).limit(parseInt(limit))
+        if (limit <= "0") { // no limit on query
+
+            const usersTodoList = await UsersTodoList.findOne({ email })
+            if (usersTodoList === null) return res.status(500).json({ message: "Query failed. Possibly a bug." })
+            console.log(usersTodoList.todoList)
+            setTimeout(() => {
+                res.status(200).json(usersTodoList!.todoList)
+            }, 200)
+
+        } else { // limit on query 
+            const usersTodoList = await UsersTodoList.findOne({ email })
+
+            setTimeout(() => {
+                const queryResult = usersTodoList!.todoList.slice(0, parseInt(limit))
+                res.status(200).json(queryResult)
+            }, 200)
+
         }
-
-        setTimeout(() => {
-            return res.status(200).json(todoList)
-        }, 200)
-
     } catch (error) {
         const err = error as Error
         console.log(err.message)
@@ -84,8 +98,21 @@ const getTodoList = async (req: Request, res: Response) => {
 }
 
 
+// done
 const editTodoItem = async (req: Request, res: Response) => {
 
+
+    // authentication
+    if (!req.session.authenticated) {
+        console.log("Session not found!")
+        return res.status(400).json({ message: "Session not found. Auth required." })
+    }
+
+    // authentication
+    if (!req.session.authenticated) {
+        console.log("Session not found!")
+        return res.status(400).json({ message: "Session not found. Auth required." })
+    }
     //validation
     const QueryShape = zod.object({
         _id: zod.string()
@@ -107,13 +134,18 @@ const editTodoItem = async (req: Request, res: Response) => {
     }
 
     //request processing
+    const { text } = req.body
+    const { email } = req.session
+    const _id = req.query._id
+
     try {
-        const ret = await Todo.findByIdAndUpdate(req.query._id, req.body)
-        if (ret != null) {
-            res.status(200).json({ message: "success" })
-        } else {
-            res.status(404).json({ message: "_id not found." })
-        }
+        const usersTodoList = await UsersTodoList.findOne({ email })
+        if (usersTodoList === null) return res.status(500).json({ message: "Query failed. Possibly a bug" })
+        const targetTodo = usersTodoList.todoList.find(item => item._id === _id)
+        const indexOfTargetTodo = usersTodoList.todoList.indexOf(targetTodo!)
+        usersTodoList.todoList[indexOfTargetTodo].text = text
+        await usersTodoList.save()
+        res.status(200).json({ message: "success" })
     } catch (error) {
         const err = error as Error
         console.log(err.message)
@@ -122,25 +154,40 @@ const editTodoItem = async (req: Request, res: Response) => {
 }
 
 
+//done
 const deleteTodoItem = async (req: Request, res: Response) => {
 
+    // authentication
+    if (!req.session.authenticated) {
+        console.log("Session not found!")
+        return res.status(400).json({ message: "Session not found. Auth required." })
+    }
+
+    // validation
     const QueryShape = zod.object({
         _id: zod.string()
     })
-
     const QueryValidation = QueryShape.safeParse(req.query)
 
     if (!QueryValidation.success) {
+
         return res.status(400).json({ message: "Invalid query param" })
     }
 
+    // request processing
+    const { email } = req.session
+    const { _id } = req.query
+
     try {
-        const ret = await Todo.findByIdAndDelete(req.query._id, req.body)
-        if (ret != null) {
-            res.status(200).json({ message: "success" })
-        } else {
-            res.status(404).json({ message: "_id not found." })
-        }
+        const usersTodoList = await UsersTodoList.findOne({ email })
+        if (usersTodoList === null) return res.status(500).json({ message: "Query failed. Possibly a bug" })
+        const targetTodo = usersTodoList.todoList.find(item => item._id == _id)
+        const indexOfTargetTodo = usersTodoList.todoList.indexOf(targetTodo!)
+        // splice(2,1) removes 1 element starting from element at index 2
+        usersTodoList.todoList.splice(indexOfTargetTodo, 1)
+        await usersTodoList.save()
+        res.status(200).json({ message: "success" })
+
     } catch (error) {
         const err = error as Error
         console.log(err.message)
@@ -148,29 +195,33 @@ const deleteTodoItem = async (req: Request, res: Response) => {
     }
 }
 
-
+//done
 const search = async (req: Request, res: Response) => {
 
+    // authentication
+    if (!req.session.authenticated) {
+        console.log("Session not found!")
+        return res.status(400).json({ message: "Session not found. Auth required." })
+    }
+
+    // validation
     const QueryShape = zod.object({
         key: zod.string()
     })
-
     const QueryValidation = QueryShape.safeParse(req.query)
 
     if (!QueryValidation.success) {
         return res.status(400).json({ message: "Invalid query param" })
     }
 
+    // request processing
     try {
-        const searchKey = req.query.key
-
-        const ret = await Todo.find({ text: { $regex: searchKey, $options: "i" } })
-
-        if (ret != null) {
-            res.status(200).json(ret)
-        } else {
-            res.status(404).json({ message: "_id not found." })
-        }
+        const key = req.query.key as string
+        const { email } = req.session
+        const usersTodoList = await UsersTodoList.findOne({ email })
+        if (usersTodoList === null) return res.status(500).json({ message: "Query failed. Possibly a bug" })
+        const searchResult = usersTodoList.todoList.filter(item => item.text.toLowerCase().includes(key))
+        res.status(200).json(searchResult)
     } catch (error) {
         const err = error as Error
         console.log(err.message)
@@ -211,9 +262,11 @@ const login = async (req: Request, res: Response) => {
             } else {
 
                 const { firstname, lastname, email, displayPicture } = queryResult
-                const userSessionData = { firstname, lastname, email, displayPicture }
 
-                req.session.user = userSessionData
+                req.session.firstname = firstname
+                req.session.lastname = lastname
+                req.session.email = email
+
                 req.session.authenticated = true
 
                 res.status(200).json({ message: "success" })
@@ -260,12 +313,12 @@ const register = async (req: Request, res: Response) => {
         if (queryResult === null) {
             const hashedPassword = await bcrypt.hash(req.body.password, 10)
             const user = new User({ ...req.body, password: hashedPassword })
-            const todoList = new TodoList({
+            const usersTodoList = new UsersTodoList({
                 email: req.body.email,
                 todoList: []
             })
             await user.save()
-            await todoList.save()
+            await usersTodoList.save()
             res.status(200).json({ message: "success" })
         } else {
             //409: conflicting resource
