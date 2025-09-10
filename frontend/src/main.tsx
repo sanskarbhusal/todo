@@ -7,7 +7,6 @@ import Login from "./components/Login"
 import Register from "./components/Register"
 import "./index.css"
 
-
 const router = createBrowserRouter([
   {
     path: "/",
