@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router"
 import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"
 import LoadingSpinner from "../LoadingSpinner"
 import zod from "zod"
-import { Navigate, useNavigate } from "react-router-dom"
 
 const url = import.meta.env.VITE_url2
 
@@ -19,22 +19,30 @@ function App(): JSX.Element {
     let [inputText, setInputText] = useState("")
     let [list, setList] = useState<TodoItem[]>([])
     let [loading, setLoading] = useState(true)
-    let [authenticated, setAuthenticated] = useState(false)
     let [status, setStatus] = useState(0)
     let [loadLimit, setLoadLimit] = useState(4)
-    const navigate = useNavigate();
+    let navigate = useNavigate()
+
     useEffect(() => {
 
         (async () => {
             try {
-                const response = await fetch(`${url}/getTodoList?limit=${loadLimit}`)
+                const response = await fetch(`${url}/getTodoList?limit=${loadLimit}`, {
+                    method: "GET",
+                    credentials: "include"
+                })
+
                 if (!response.ok) {
+                    console.log(await response.json())
                     switch (response.status) {
-                        case 500:
-                            setStatus(500)
-                            throw Error(status.toString())
                         case 400:
                             setStatus(400)
+                            throw Error(status.toString())
+                        case 403:
+                            navigate("/login")
+                            break
+                        case 500:
+                            setStatus(500)
                             throw Error(status.toString())
                         default:
                             console.log("Default case in error response")
@@ -60,12 +68,9 @@ function App(): JSX.Element {
                 setLoading(false)
 
             } catch (error) {
-                const err = error as Error
-                console.log(err.message)
                 setLoading(false)
             }
         })()
-        console.log("useEffect")
     }, [loadLimit])
 
     //working
@@ -87,6 +92,9 @@ function App(): JSX.Element {
                     case 400:
                         setStatus(400)
                         throw Error(status.toString())
+                    case 403:
+                        navigate("/login")
+                        break
                     default:
                         console.log("Default case in error response")
                 }
@@ -134,6 +142,9 @@ function App(): JSX.Element {
                         case 400:
                             setStatus(400)
                             throw Error(status.toString())
+                        case 403:
+                            navigate("/login")
+                            break
                         default:
                             console.log("Default case in error response")
                     }
@@ -151,20 +162,6 @@ function App(): JSX.Element {
 
         }
 
-    }
-    if (!authenticated) {
-
-        return (
-            <div className="text-2xl">
-                Session expired &#x1F622; <br />
-                <div className="text-center">
-                    <span>Please</span>
-                    {" "}
-                    <a href="/login">login.</a>
-
-                </div>
-            </div>
-        )
     }
 
     return (

@@ -10,3 +10,32 @@ body {
 #root {
     height: 100dvh;
 }
+
+.login-input {
+    height: 23px;
+    width: 220px;
+    border: 1px solid blue;
+    border-radius: 10px;
+    outline: none;
+    padding-left: 8px;
+}
+
+.login-input:focus {
+    box-shadow: 0 0 0 3px lightblue;
+    border: 1px solid transparent
+}
+
+
+.register-input {
+    height: 23px;
+    width: 220px;
+    border: 1px solid green;
+    border-radius: 10px;
+    outline: none;
+    padding-left: 8px;
+}
+
+.register-input:focus {
+    box-shadow: 0 0 0 3px lightgreen;
+    border: 1px solid transparent
+}

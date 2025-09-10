@@ -53,7 +53,7 @@ const getTodoList = async (req: Request, res: Response) => {
     // authentication
     if (!req.session.authenticated) {
         console.log("Session not found!")
-        return res.status(400).json({ message: "Session not found. Auth required." })
+        return res.status(403).json({ message: "Session not found. Auth required." })
     }
 
     //validation
@@ -105,14 +105,9 @@ const editTodoItem = async (req: Request, res: Response) => {
     // authentication
     if (!req.session.authenticated) {
         console.log("Session not found!")
-        return res.status(400).json({ message: "Session not found. Auth required." })
+        return res.status(403).json({ message: "Session not found. Auth required." })
     }
 
-    // authentication
-    if (!req.session.authenticated) {
-        console.log("Session not found!")
-        return res.status(400).json({ message: "Session not found. Auth required." })
-    }
     //validation
     const QueryShape = zod.object({
         _id: zod.string()
@@ -160,7 +155,7 @@ const deleteTodoItem = async (req: Request, res: Response) => {
     // authentication
     if (!req.session.authenticated) {
         console.log("Session not found!")
-        return res.status(400).json({ message: "Session not found. Auth required." })
+        return res.status(403).json({ message: "Session not found. Auth required." })
     }
 
     // validation
@@ -201,7 +196,7 @@ const search = async (req: Request, res: Response) => {
     // authentication
     if (!req.session.authenticated) {
         console.log("Session not found!")
-        return res.status(400).json({ message: "Session not found. Auth required." })
+        return res.status(403).json({ message: "Session not found. Auth required." })
     }
 
     // validation
@@ -307,7 +302,6 @@ const register = async (req: Request, res: Response) => {
     }
 
     try {
-
         let queryResult = await User.findOne({ email: req.body.email })
 
         if (queryResult === null) {
@@ -324,16 +318,34 @@ const register = async (req: Request, res: Response) => {
             //409: conflicting resource
             res.status(409).json({ message: "Email already registered" })
         }
-
     } catch (error) {
-
         const err = error as Error
         console.log(err.message)
         res.status(500).json({ message: "Database error" })
-
     }
 }
 
+
+const hasSession = async (req: Request, res: Response) => {
+
+    const QueryShape = zod.object({
+        email: zod.email(),
+    })
+
+    const BodyValidation = QueryShape.safeParse(req.query)
+
+    if (!BodyValidation.success) {
+        return res.status(400).json({ message: "Invalid JSON payload." })
+    }
+
+    const { email, authenticated } = req.session
+
+    if (authenticated && req.query.email === email) {
+        return res.status(200).json({ message: "Success" })
+    } else {
+        return res.status(403).json({ message: "Unauthorized. No sesion found." })
+    }
+}
 
 export {
     addTodoItem,
@@ -342,5 +354,6 @@ export {
     deleteTodoItem,
     search,
     login,
-    register
+    register,
+    hasSession
 }

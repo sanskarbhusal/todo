@@ -10,7 +10,8 @@ import {
     deleteTodoItem,
     search,
     login,
-    register
+    register,
+    hasSession
 } from "./controller/todo.controller.js"
 
 
@@ -28,10 +29,14 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 500000,
+        sameSite: "lax",
+        secure: false,
+        httpOnly: true,
     }
 }))
 app.use(cors({
-    origin: process.env.allowedOrigin
+    origin: process.env.allowedOrigin,
+    credentials: true,
 }))
 
 
@@ -55,6 +60,9 @@ app.post("/todo-api/register", register)
 
 // login user
 app.post("/todo-api/login", login)
+
+// login user
+app.get("/todo-api/hasSession", hasSession)
 
 //making database connection
 mongoose.connect("mongodb://myUserAdmin:admin@localhost:27017/todo?authSource=admin").then(() => {
