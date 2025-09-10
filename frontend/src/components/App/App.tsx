@@ -2,10 +2,8 @@ import { useState, useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"
 import LoadingSpinner from "../LoadingSpinner"
-import SearchBox from "../SearchBox"
 import zod from "zod"
-
-
+import { Navigate, useNavigate } from "react-router-dom"
 
 const url = import.meta.env.VITE_url
 
@@ -21,8 +19,10 @@ function App(): JSX.Element {
     let [inputText, setInputText] = useState("")
     let [list, setList] = useState<TodoItem[]>([])
     let [loading, setLoading] = useState(true)
+    let [authenticated, setAuthenticated] = useState(false)
     let [status, setStatus] = useState(0)
     let [loadLimit, setLoadLimit] = useState(4)
+    const navigate = useNavigate();
     useEffect(() => {
 
         (async () => {
@@ -151,6 +151,20 @@ function App(): JSX.Element {
 
         }
 
+    }
+    if (!authenticated) {
+
+        return (
+            <div className="text-2xl">
+                Session expired &#x1F622; <br />
+                <div className="text-center">
+                    <span>Please</span>
+                    {" "}
+                    <a href="/login">login.</a>
+
+                </div>
+            </div>
+        )
     }
 
     return (
