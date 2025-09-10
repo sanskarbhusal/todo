@@ -79,7 +79,7 @@ const getTodoList = async (req: Request, res: Response) => {
             console.log(usersTodoList.todoList)
             setTimeout(() => {
                 res.status(200).json(usersTodoList!.todoList)
-            }, 200)
+            }, 100)
 
         } else { // limit on query 
             const usersTodoList = await UsersTodoList.findOne({ email })
@@ -87,7 +87,7 @@ const getTodoList = async (req: Request, res: Response) => {
             setTimeout(() => {
                 const queryResult = usersTodoList!.todoList.slice(0, parseInt(limit))
                 res.status(200).json(queryResult)
-            }, 200)
+            }, 150)
 
         }
     } catch (error) {

@@ -78,6 +78,7 @@ function App(): JSX.Element {
 
         const response = await fetch(`${url}/deleteTodoItem?_id=${_id}`, {
             method: "DELETE",
+            credentials: "include"
             // headers: {
             //     "Content-Type": "application/json",
             // },
@@ -130,7 +131,9 @@ function App(): JSX.Element {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(todoItem)
+                body: JSON.stringify(todoItem),
+                credentials: "include"
+
             })
 
             try {

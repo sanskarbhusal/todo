@@ -1,8 +1,9 @@
 import { useState } from "react"
 import LoadingSpinner from "../LoadingSpinner"
+import { useNavigate } from "react-router"
 
 
-const url = import.meta.env.VITE_url
+const url = import.meta.env.VITE_url2
 
 
 type TextArea = {
@@ -18,14 +19,15 @@ function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, 
     let [newText, setNewText] = useState(text)
     let [textArea, setTextArea] = useState<TextArea>({ disabled: true, updatePending: false, buttonText: "edit" })
     let [status, setStatus] = useState(0)
-
+    let navigate = useNavigate()
 
     async function handleUpdateText() {
 
         const response = await fetch(`${url}/editTodoItem?_id=${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: newText })
+            body: JSON.stringify({ text: newText }),
+            credentials: "include"
         })
 
         try {
@@ -37,6 +39,9 @@ function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, 
                     case 400:
                         setStatus(400)
                         throw Error(status.toString())
+                    case 403:
+                        navigate("/login")
+                        break
                     default:
                         throw Error("Didn't get any status code while updating todo text")
                 }
