@@ -56,17 +56,17 @@ function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, 
     }
 
     return (
-        <div className=" w-full h-fit flex flex-row w-30 gap-2 bg-gray-100 shadow-inner border border-solid border-green-500" >
-            <textarea className="w-full resize-none min-h-12 text-wrap overflow-y-auto overflow-x-hidden p-1 border-none disabled:text-black "
+        <div className=" w-full h-fit flex flex-row w-30 gap-2 p-1 bg-purple-300 shadow-inner rounded-md" >
+            <textarea className="w-full resize-none min-h-12 text-wrap overflow-y-auto overflow-x-hidden p-2 rounded-2xl border-none disabled:text-black bg-white disabled:bg-purple-100 outline-purple-700 "
                 value={newText}
                 onChange={(e) => { setNewText(e.target.value) }}
                 disabled={textArea.disabled}
             >
             </textarea>
 
-            <div className="flex flex-col gap-1 p-1">
+            <div className="flex flex-col justify-center gap-2 bg-transparent rounded-2xl ">
                 <button
-                    className="h-6 self-center w-full "
+                    className="h-6 self-center w-full text-purple-800 border-purple-500 rounded-md hover:bg-purple-500 hover:text-white active:text-black transition-colors"
                     onClick={() => {
                         removeTodoItem(id)
                     }}>
@@ -74,7 +74,7 @@ function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, 
                 </button>
 
                 <button
-                    className="h-6 self-center w-full"
+                    className="h-6 self-center w-full text-purple-800 border-purple-500 rounded-md hover:bg-purple-500 hover:text-white active:text-black"
                     onClick={() => {
                         setTextArea((prev) => {
                             if (prev.disabled) {

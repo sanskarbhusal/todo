@@ -75,7 +75,6 @@ function App(): JSX.Element {
 
     //working
     async function removeTodoItem(_id: string) {
-
         const response = await fetch(`${url}/deleteTodoItem?_id=${_id}`, {
             method: "DELETE",
             credentials: "include"
@@ -171,7 +170,7 @@ function App(): JSX.Element {
         <div className="h-fit w-fit flex flex-col font-serif gap-2 " >
             <div className="flex gap-2 ">
                 <input
-                    className="w-full"
+                    className="w-full h-7 border border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full"
                     value={inputText}
                     type="text"
                     onKeyUp={(e) => {
@@ -187,7 +186,7 @@ function App(): JSX.Element {
                     }}
                 />
                 <button
-                    className="mr-[-0px]"
+                    className="mr-[-0px] h-7 self-center border-purple-400 rounded-md bg-white"
                     onClick={() => {
                         addTodoItem(inputText)
                         setInputText("")
@@ -195,15 +194,16 @@ function App(): JSX.Element {
                     Add
                 </button>
             </div>
-            <div className="h-96 w-80 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-2 p-2 border border-solid shadow-lg">
+            <div className="h-96 w-96 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-3 p-3 pt-4 border-1 border-solid border-purple-500 shadow-inner shadow-purple-300 rounded-md">
                 {
-                    loading ? <LoadingSpinner size={30} /> : list.map((item) => {
+                    loading ? <LoadingSpinner size={30} className="text-purple-400" /> : list.map((item) => {
 
                         return <TodoItem key={item._id} text={item.text} uuid={item._id} removeTodoItem={removeTodoItem} />
                     })
                 }
             </div>
             <button
+                className="w-[30%] h-7 self-center font-semibold font-sans border-purple-400 rounded-md bg-white active:bg-purple-400 active:text-white hover:shadow-xl"
                 onClick={() => {
                     setLoadLimit(prev => { return prev + 4 })
                 }}
