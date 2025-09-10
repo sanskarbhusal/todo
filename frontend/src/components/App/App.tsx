@@ -5,7 +5,7 @@ import LoadingSpinner from "../LoadingSpinner"
 import zod from "zod"
 import { Navigate, useNavigate } from "react-router-dom"
 
-const url = import.meta.env.VITE_url
+const url = import.meta.env.VITE_url2
 
 
 //type definitions
