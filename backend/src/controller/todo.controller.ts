@@ -193,6 +193,10 @@ const deleteTodoItem = async (req: Request, res: Response) => {
 //done
 const search = async (req: Request, res: Response) => {
 
+    //debugging
+    console.log("Search request incomming...")
+
+
     // authentication
     if (!req.session.authenticated) {
         console.log("Session not found!")

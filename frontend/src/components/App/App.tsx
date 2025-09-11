@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router"
 import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"
@@ -16,15 +16,21 @@ type TodoItem = {
 
 
 function App(): JSX.Element {
-    let [inputText, setInputText] = useState("")
-    let [list, setList] = useState<TodoItem[]>([])
-    let [loading, setLoading] = useState(true)
-    let [status, setStatus] = useState(0)
-    let [loadLimit, setLoadLimit] = useState(4)
-    let navigate = useNavigate()
 
+    // state hooks
+    const [todoText, setTodoText] = useState("")
+    const [searchText, setSearchText] = useState("")
+    const [list, setList] = useState<TodoItem[]>([])
+    const [loading, setLoading] = useState(true)
+    const [searchClicked, setSearchClicked] = useState(false)
+    const [searching, setSearching] = useState(false)
+    const [outsideClicked, setOutsideClicked] = useState(false)
+    const [status, setStatus] = useState(0)
+    const [loadLimit, setLoadLimit] = useState(4)
+    const navigate = useNavigate()
+
+    // effect hooks
     useEffect(() => {
-
         (async () => {
             try {
                 const response = await fetch(`${url}/getTodoList?limit=${loadLimit}`, {
@@ -52,6 +58,7 @@ function App(): JSX.Element {
 
                 const responseJSON = await response.json()
 
+                // validation
                 const TodoItemShape = zod.looseObject({
                     _id: zod.string(),
                     text: zod.string(),
@@ -64,16 +71,60 @@ function App(): JSX.Element {
                     throw Error("Invalid json from the server")
                 }
 
-                setList(responseJSON)
+                // svaing fetched data
                 setLoading(false)
+                if (!searchClicked) {
+                    setList(responseJSON)
+                } else {
+
+                }
 
             } catch (error) {
                 setLoading(false)
+                navigate("/login")
             }
         })()
     }, [loadLimit])
 
-    //working
+    useEffect(() => {
+        if (list.length !== 0 && !searching) {
+            const el = document.getElementById(list[list.length - 1]._id)
+            if (el !== null) {
+                el.scrollIntoView({ behavior: "auto" })
+            }
+        }
+    }, [list])
+
+    useEffect(() => {
+        (async () => {
+            const response = await fetch(`${url}/search?key=${searchText}`, {
+                method: "GET",
+                credentials: "include"
+            })
+
+            if (response.ok) {
+                //
+                // validation
+                const responseJSON = await response.json()
+                const ResponseShape = zod.array(
+                    zod.looseObject({
+                        _id: zod.string(),
+                        text: zod.string()
+                    }
+                    )
+                )
+                const result = ResponseShape.safeParse(responseJSON)
+
+                if (result.success) {
+                    //update state
+                    setList(responseJSON)
+                } else {
+                    console.log("Invalid response for search query from server.")
+                }
+            }
+        })()
+    }, [searching])
+
     async function removeTodoItem(_id: string) {
         const response = await fetch(`${url}/deleteTodoItem?_id=${_id}`, {
             method: "DELETE",
@@ -115,8 +166,6 @@ function App(): JSX.Element {
 
     }
 
-
-    //Done.
     async function addTodoItem(text: string) {
         if (text.trim() != "") {
 
@@ -167,47 +216,60 @@ function App(): JSX.Element {
     }
 
     return (
-        <div className="h-fit w-fit flex flex-col font-serif gap-2 " >
+        <div className="h-fit w-fit flex flex-col font-serif gap-4 " >
+            <div className="flex">
+                <input
+                    className="w-full h-7 text-center border-1 border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full"
+                    placeholder="Start typing to search"
+                    type="text"
+                    value={searchText}
+                    onClick={() => {
+                        setSearchClicked(true)
+                    }}
+                    onChange={(e) => {
+                        setSearchText(e.target.value)
+                        setSearching(true)
+                    }}
+                />
+            </div>
+            <div className="h-96 w-96 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-[14px] p-[14px] border-1 border-solid border-purple-500 shadow-inner shadow-purple-300 rounded-md"
+            >
+                {
+                    loading ? <LoadingSpinner size={30} className="text-purple-400" /> : list.map((item) => {
+                        return <TodoItem key={item._id} text={item.text} uuid={item._id} html_id={item._id} removeTodoItem={removeTodoItem} />
+
+                    })
+                }
+            </div>
+
             <div className="flex gap-2 ">
                 <input
-                    className="w-full h-7 border border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full"
-                    value={inputText}
+                    className="w-full h-7 pl-4 border-1 border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full"
+                    value={todoText}
+                    placeholder="Add todo"
                     type="text"
                     onKeyUp={(e) => {
                         if (e.key === "Enter") {
-                            addTodoItem(inputText)
-                            setInputText(() => {
+                            addTodoItem(todoText)
+                            setTodoText(() => {
                                 return ""
                             })
                         }
                     }}
                     onChange={(e) => {
-                        setInputText(e.target.value)
+                        setTodoText(e.target.value)
                     }}
                 />
-                <button
-                    className="mr-[-0px] h-7 self-center border-purple-400 rounded-md bg-white"
-                    onClick={() => {
-                        addTodoItem(inputText)
-                        setInputText("")
-                    }}>
-                    Add
-                </button>
-            </div>
-            <div className="h-96 w-96 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-3 p-3 pt-4 border-1 border-solid border-purple-500 shadow-inner shadow-purple-300 rounded-md">
-                {
-                    loading ? <LoadingSpinner size={30} className="text-purple-400" /> : list.map((item) => {
-
-                        return <TodoItem key={item._id} text={item.text} uuid={item._id} removeTodoItem={removeTodoItem} />
-                    })
-                }
             </div>
             <button
-                className="w-[30%] h-7 self-center font-semibold font-sans border-purple-400 rounded-md bg-white active:bg-purple-400 active:text-white hover:shadow-xl"
+                className="w-[30%] h-7 self-center font-semibold font-sans border-purple-400 rounded-full bg-white active:bg-purple-400 active:text-white hover:shadow-xl"
                 onClick={() => {
                     setLoadLimit(prev => { return prev + 4 })
                 }}
-            >Load More</button>
+            >
+                Load More
+            </button>
+
         </div>
 
     )

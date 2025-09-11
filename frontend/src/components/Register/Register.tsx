@@ -51,7 +51,7 @@ export default function Register() {
     }
     if (!registered) return (
         <div className="w-fit h-fit flex flex-col gap-5 p-3 font-sans border-1 border-solid border-green-400 shadow-xl rounded-md">
-            <div className="h-12 flex flex-col font-mono font-black text-xl text-green-500">
+            <div className="h-12 flex flex-col font-mono font-black text-2xl text-green-500">
                 Create Account
                 {error.happened ? <span className="text-red-500 font-sans text-wrap text-center font-medium text-sm">{error.message}!</span> : ""}
             </div>

@@ -13,7 +13,7 @@ type TextArea = {
 }
 
 
-function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, removeTodoItem: (uuid: string) => void }) {
+function TodoItem({ text, uuid, html_id, removeTodoItem }: { text: string, uuid: string, html_id: string, removeTodoItem: (uuid: string) => void }) {
 
     let [id] = useState(uuid)
     let [newText, setNewText] = useState(text)
@@ -56,7 +56,9 @@ function TodoItem({ text, uuid, removeTodoItem }: { text: string, uuid: string, 
     }
 
     return (
-        <div className=" w-full h-fit flex flex-row w-30 gap-2 p-1 bg-purple-300 shadow-inner rounded-md" >
+        <div className=" w-full h-fit flex flex-row w-30 gap-2 p-1 bg-purple-300 shadow-inner rounded-md"
+            id={html_id}
+        >
             <textarea className="w-full resize-none min-h-12 text-wrap overflow-y-auto overflow-x-hidden p-2 rounded-2xl border-none disabled:text-black bg-white disabled:bg-purple-100 outline-purple-700 "
                 value={newText}
                 onChange={(e) => { setNewText(e.target.value) }}

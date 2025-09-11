@@ -8,21 +8,30 @@ const url = import.meta.env.VITE_url2
 export default function Login() {
 
     const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
-    const [password, setPassword] = useState("password123")
+    const [password, setPassword] = useState("admin")
     const [error, setError] = useState({ message: "Error message", happened: false })
 
     const navigate = useNavigate()
 
     async function handleLogin() {
+        let response
+        try {
+            response = await fetch(`${url}/login`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                method: "POST",
+                body: JSON.stringify({ email, password })
+            })
+        } catch (error) {
+            const err = error as Error
+            console.log(err)
+        }
 
-        const response = await fetch(`${url}/login`, {
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            method: "POST",
-            body: JSON.stringify({ email, password })
-        })
+        if (response === undefined) {
+            return alert("Server offline !!!")
+        }
 
         if (!response.ok) {
             switch (response.status) {
@@ -46,7 +55,7 @@ export default function Login() {
         const ResponseShape = zod.object({
             message: zod.string(),
         })
-        const result = ResponseShape.safeParse(ResponseShape)
+        const result = ResponseShape.safeParse(response)
 
         if (!result.success) {
             throw Error("Invalid json from the server")
@@ -55,7 +64,7 @@ export default function Login() {
 
     return (
         <div className="w-fit h-fit flex flex-col gap-4 p-3 pt-0 font-sans border-1 border-solid border-blue-400 shadow-xl rounded-md">
-            <p className="font-mono font-black text-xl text-blue-500">
+            <p className="font-mono font-black text-2xl text-blue-500">
                 Login
                 {error.happened ? <span className="text-red-500 ml-8 font-sans font-medium text-sm">{error.message}</span> : ""}
             </p>
