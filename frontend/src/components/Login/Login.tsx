@@ -91,7 +91,7 @@ export default function Login() {
                     </div>
                     <a
                         className="flex justify-end text-blue-500"
-                        href={"register"}
+                        href={"/changePassword"}
                     >
                         Forgot password?
                     </a>

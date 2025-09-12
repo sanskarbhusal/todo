@@ -226,7 +226,6 @@ function App(): JSX.Element {
             }
 
         }
-
     }
     return (
         <div className="h-fit w-fit flex flex-col font-sans gap-4 drop-shadow-md" >
@@ -277,7 +276,7 @@ function App(): JSX.Element {
                 }}
             />
             <button
-                className="w-[30%] h-7 self-center font-semibold font-sans border-solid border-[2px] border-blue-500 rounded-full bg-white active:bg-blue-400 active:text-white hover:shadow-xl"
+                className=" w-fit self-center bg-white border-blue-500 rounded-xl border-[1px] p-1 px-3 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
                 onClick={() => {
                     setLoadLimit(prev => { return prev + 4 })
                 }}

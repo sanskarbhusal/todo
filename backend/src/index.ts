@@ -16,6 +16,7 @@ import {
 
 
 dotenv.config()
+const mongoDbUrl = process.env.mongoDbUrl as string
 const port = 8080
 const app = express()
 const sessionSecret = process.env.sessionSecret || "default secret"
@@ -65,7 +66,7 @@ app.post("/todo-api/login", login)
 app.get("/todo-api/hasSession", hasSession)
 
 //making database connection
-mongoose.connect("mongodb://myUserAdmin:admin@localhost:27017/todo?authSource=admin").then(() => {
+mongoose.connect(mongoDbUrl).then(() => {
     console.log("Connected to local instance of MonogoDB")
     app.listen(port, () => console.log("Listening on port: ", port))
 }).catch((error: unknown) => {

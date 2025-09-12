@@ -5,6 +5,8 @@ import { RouterProvider } from "react-router/dom"
 import App from './components/App'
 import Login from "./components/Login"
 import Register from "./components/Register"
+import PasswordForm from "./components/PasswordForm"
+import OTPForm from './components/OTPForm'
 import "./index.css"
 
 const router = createBrowserRouter([
@@ -20,6 +22,14 @@ const router = createBrowserRouter([
   {
     path: "/login",
     Component: Login
+  },
+  {
+    path: "/changePassword",
+    Component: PasswordForm
+  },
+  {
+    path: "/otpForm",
+    Component: OTPForm
   }
 ])
 

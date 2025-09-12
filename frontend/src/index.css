@@ -2,6 +2,21 @@
 @tailwind utilities;
 @tailwind base;
 
+@layer utilities {
+
+    /* Chrome, Safari, Edge */
+    .no-spinner::-webkit-outer-spin-button,
+    .no-spinner::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    .no-spinner[type=number] {
+        -moz-appearance: textfield;
+    }
+}
+
 body {
     padding: 0;
     margin: 0;
