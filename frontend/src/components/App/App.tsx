@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, type HTMLAttributes, type HTMLInputTypeAttribute } from "react"
 import { useNavigate } from "react-router"
 import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"
@@ -22,16 +22,26 @@ function App(): JSX.Element {
     const [searchText, setSearchText] = useState("")
     const [list, setList] = useState<TodoItem[]>([])
     const [loading, setLoading] = useState(true)
-    const [searchClicked, setSearchClicked] = useState(false)
+    const [searchFocused, setSearchFocused] = useState(false)
     const [searching, setSearching] = useState(false)
-    const [outsideClicked, setOutsideClicked] = useState(false)
-    const [status, setStatus] = useState(0)
     const [loadLimit, setLoadLimit] = useState(4)
     const navigate = useNavigate()
 
+    // ref hook
+    const searchBoxRef = useRef<HTMLInputElement>(null)
+
     // effect hooks
     useEffect(() => {
+        let ignore = false;
         (async () => {
+            // event listener to handle search box focus
+            document.addEventListener("click", (e) => {
+                if (searchBoxRef.current && !searchBoxRef.current.contains(e.target as Node) && !ignore) {
+                    setSearchFocused(false)
+                    setSearching(false)
+                }
+            })
+
             try {
                 const response = await fetch(`${url}/getTodoList?limit=${loadLimit}`, {
                     method: "GET",
@@ -42,14 +52,12 @@ function App(): JSX.Element {
                     console.log(await response.json())
                     switch (response.status) {
                         case 400:
-                            setStatus(400)
-                            throw Error(status.toString())
+                            throw Error("400")
                         case 403:
                             navigate("/login")
                             break
                         case 500:
-                            setStatus(500)
-                            throw Error(status.toString())
+                            throw Error("500")
                         default:
                             console.log("Default case in error response")
                             break
@@ -73,21 +81,60 @@ function App(): JSX.Element {
 
                 // svaing fetched data
                 setLoading(false)
-                if (!searchClicked) {
+                if (!searchFocused) {
                     setList(responseJSON)
                 } else {
-
+                    setList([])
                 }
 
             } catch (error) {
                 setLoading(false)
                 navigate("/login")
             }
-        })()
-    }, [loadLimit])
+        })();
+
+        return () => {
+            ignore = true
+        }
+
+    }, [loadLimit, searchFocused])
 
     useEffect(() => {
-        if (list.length !== 0 && !searching) {
+        if (searching) {
+            (async () => {
+                const response = await fetch(`${url}/search?key=${searchText}`, {
+                    method: "GET",
+                    credentials: "include"
+                })
+
+                if (response.ok) {
+                    //
+                    // validation
+                    const responseJSON = await response.json()
+                    const ResponseShape = zod.array(
+                        zod.looseObject({
+                            _id: zod.string(),
+                            text: zod.string()
+                        }
+                        )
+                    )
+                    const result = ResponseShape.safeParse(responseJSON)
+
+                    if (result.success) {
+                        //update state
+                        setLoading(false)
+                        setList(responseJSON)
+                        setSearching(false)
+                    } else {
+                        console.log("Invalid response for search query from server.")
+                    }
+                }
+            })()
+        }
+    }, [searchText])
+
+    useEffect(() => {
+        if (!searchFocused && list.length > 0) {
             const el = document.getElementById(list[list.length - 1]._id)
             if (el !== null) {
                 el.scrollIntoView({ behavior: "auto" })
@@ -95,35 +142,6 @@ function App(): JSX.Element {
         }
     }, [list])
 
-    useEffect(() => {
-        (async () => {
-            const response = await fetch(`${url}/search?key=${searchText}`, {
-                method: "GET",
-                credentials: "include"
-            })
-
-            if (response.ok) {
-                //
-                // validation
-                const responseJSON = await response.json()
-                const ResponseShape = zod.array(
-                    zod.looseObject({
-                        _id: zod.string(),
-                        text: zod.string()
-                    }
-                    )
-                )
-                const result = ResponseShape.safeParse(responseJSON)
-
-                if (result.success) {
-                    //update state
-                    setList(responseJSON)
-                } else {
-                    console.log("Invalid response for search query from server.")
-                }
-            }
-        })()
-    }, [searching])
 
     async function removeTodoItem(_id: string) {
         const response = await fetch(`${url}/deleteTodoItem?_id=${_id}`, {
@@ -138,11 +156,9 @@ function App(): JSX.Element {
             if (!response.ok) {
                 switch (response.status) {
                     case 500:
-                        setStatus(500)
-                        throw Error(status.toString())
+                        throw Error("500")
                     case 400:
-                        setStatus(400)
-                        throw Error(status.toString())
+                        throw Error("400")
                     case 403:
                         navigate("/login")
                         break
@@ -188,11 +204,9 @@ function App(): JSX.Element {
                 if (!response.ok) {
                     switch (response.status) {
                         case 500:
-                            setStatus(500)
-                            throw Error(status.toString())
+                            throw Error("500")
                         case 400:
-                            setStatus(400)
-                            throw Error(status.toString())
+                            throw Error("400")
                         case 403:
                             navigate("/login")
                             break
@@ -214,21 +228,22 @@ function App(): JSX.Element {
         }
 
     }
-
     return (
         <div className="h-fit w-fit flex flex-col font-serif gap-4 " >
             <div className="flex">
                 <input
-                    className="w-full h-7 text-center border-1 border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full"
-                    placeholder="Start typing to search"
+                    className="w-full h-7 text-center text-sm font-medium font-sans border-1 border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full focus:placeholder:text-transparent"
+                    placeholder="Search"
+                    ref={searchBoxRef}
                     type="text"
                     value={searchText}
                     onClick={() => {
-                        setSearchClicked(true)
+                        setSearchFocused(true)
                     }}
                     onChange={(e) => {
                         setSearchText(e.target.value)
                         setSearching(true)
+                        setLoading(true)
                     }}
                 />
             </div>
@@ -239,6 +254,11 @@ function App(): JSX.Element {
                         return <TodoItem key={item._id} text={item.text} uuid={item._id} html_id={item._id} removeTodoItem={removeTodoItem} />
 
                     })
+                }
+
+                {
+                    !searching && list.length == 0 ? <p className="z-10 h-full w-full flex justify-center items-center font-mono text-gray-600">Start typing to search</p> : ""
+
                 }
             </div>
 

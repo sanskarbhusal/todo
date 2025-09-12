@@ -79,7 +79,7 @@ const getTodoList = async (req: Request, res: Response) => {
             console.log(usersTodoList.todoList)
             setTimeout(() => {
                 res.status(200).json(usersTodoList!.todoList)
-            }, 100)
+            }, 200)
 
         } else { // limit on query 
             const usersTodoList = await UsersTodoList.findOne({ email })
@@ -87,7 +87,7 @@ const getTodoList = async (req: Request, res: Response) => {
             setTimeout(() => {
                 const queryResult = usersTodoList!.todoList.slice(0, parseInt(limit))
                 res.status(200).json(queryResult)
-            }, 150)
+            }, 200)
 
         }
     } catch (error) {
@@ -193,10 +193,6 @@ const deleteTodoItem = async (req: Request, res: Response) => {
 //done
 const search = async (req: Request, res: Response) => {
 
-    //debugging
-    console.log("Search request incomming...")
-
-
     // authentication
     if (!req.session.authenticated) {
         console.log("Session not found!")
@@ -220,7 +216,7 @@ const search = async (req: Request, res: Response) => {
         const usersTodoList = await UsersTodoList.findOne({ email })
         if (usersTodoList === null) return res.status(500).json({ message: "Query failed. Possibly a bug" })
         const searchResult = usersTodoList.todoList.filter(item => item.text.toLowerCase().includes(key))
-        res.status(200).json(searchResult)
+        setTimeout(() => res.status(200).json(searchResult), 100)
     } catch (error) {
         const err = error as Error
         console.log(err.message)
