@@ -25,7 +25,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <div className="h-full w-full flex flex-row justify-center items-center">
+    <div className="h-full w-full flex flex-row justify-center items-center drop-shadow-md">
       {/* <App /> */}
       <RouterProvider router={router} />
     </div>

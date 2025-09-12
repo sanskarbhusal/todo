@@ -229,25 +229,23 @@ function App(): JSX.Element {
 
     }
     return (
-        <div className="h-fit w-fit flex flex-col font-serif gap-4 " >
-            <div className="flex">
-                <input
-                    className="w-full h-7 text-center text-sm font-medium font-sans border-1 border-solid border-blue-500 outline-blue-500 bg-white shadow-inner shadow-blue-200 rounded-full focus:placeholder:text-transparent"
-                    placeholder="Search"
-                    ref={searchBoxRef}
-                    type="text"
-                    value={searchText}
-                    onClick={() => {
-                        setSearchFocused(true)
-                    }}
-                    onChange={(e) => {
-                        setSearchText(e.target.value)
-                        setSearching(true)
-                        setLoading(true)
-                    }}
-                />
-            </div>
-            <div className="h-96 w-96 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-[14px] p-[14px] border-1 border-solid border-blue-500 shadow-inner shadow-blue-200 rounded-md"
+        <div className="h-fit w-fit flex flex-col font-sans gap-4 drop-shadow-md" >
+            <input
+                className="h-9 w-full text-center border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
+                placeholder="Search"
+                ref={searchBoxRef}
+                type="text"
+                value={searchText}
+                onClick={() => {
+                    setSearchFocused(true)
+                }}
+                onChange={(e) => {
+                    setSearchText(e.target.value)
+                    setSearching(true)
+                    setLoading(true)
+                }}
+            />
+            <div className="h-96 w-96 flex flex-col bg-transparent items-center overflow-y-auto overflow-x-hidden gap-[14px] p-[14px] font-sans border-[1px] border-solid shadow-md rounded-2xl transition-all drop-shadow-xl "
             >
                 {
                     loading ? <LoadingSpinner size={30} className="text-blue-400" /> : list.map((item) => {
@@ -257,32 +255,29 @@ function App(): JSX.Element {
                 }
 
                 {
-                    !searching && list.length == 0 ? <p className="z-10 h-full w-full flex justify-center items-center font-mono text-gray-600">Start typing to search</p> : ""
+                    !searching && list.length == 0 ? <p className="z-10 h-full w-full flex justify-center items-center text-gray-600">Start typing to search</p> : ""
 
                 }
             </div>
-
-            <div className="flex gap-2 ">
-                <input
-                    className="w-full h-7 pl-4 border-1 border-solid border-blue-500 outline-blue-500 bg-white shadow-inner shadow-blue-200 rounded-full"
-                    value={todoText}
-                    placeholder="Add todo"
-                    type="text"
-                    onKeyUp={(e) => {
-                        if (e.key === "Enter") {
-                            addTodoItem(todoText)
-                            setTodoText(() => {
-                                return ""
-                            })
-                        }
-                    }}
-                    onChange={(e) => {
-                        setTodoText(e.target.value)
-                    }}
-                />
-            </div>
+            <input
+                className="h-9 w-full pl-3 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
+                value={todoText}
+                placeholder="Add todo"
+                type="text"
+                onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        addTodoItem(todoText)
+                        setTodoText(() => {
+                            return ""
+                        })
+                    }
+                }}
+                onChange={(e) => {
+                    setTodoText(e.target.value)
+                }}
+            />
             <button
-                className="w-[30%] h-7 self-center font-semibold font-sans border-blue-400 rounded-full bg-white active:bg-blue-400 active:text-white hover:shadow-xl"
+                className="w-[30%] h-7 self-center font-semibold font-sans border-solid border-[2px] border-blue-500 rounded-full bg-white active:bg-blue-400 active:text-white hover:shadow-xl"
                 onClick={() => {
                     setLoadLimit(prev => { return prev + 4 })
                 }}

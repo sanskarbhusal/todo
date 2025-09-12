@@ -1,6 +1,6 @@
 /* @tailwind base; */
 @tailwind utilities;
-
+@tailwind base;
 
 body {
     padding: 0;
@@ -9,49 +9,4 @@ body {
 
 #root {
     height: 100dvh;
-}
-
-/* blue theme */
-.blue-input {
-    height: 23px;
-    width: 220px;
-    border: 1px solid blue;
-    border-radius: 10px;
-    outline: 1px solid green;
-    padding-left: 8px;
-}
-
-.blue-input-border {
-
-    border: 1px solid blue;
-    border-radius: 10px;
-    outline: 1px solid green;
-    padding-left: 8px;
-}
-
-.login-input:focus {
-    box-shadow: 0 0 0 3px lightblue;
-    border: 1px solid transparent
-}
-
-
-/* green theme*/
-.green-input {
-    height: 23px;
-    width: 220px;
-    border: 1px solid green;
-    border-radius: 10px;
-    outline: 1px solid green;
-}
-
-.green-input:focus {
-    box-shadow: 0 0 0 3px lightgreen;
-    border: 1px solid transparent
-}
-
-.green-input-border {
-
-    border: 1px solid green;
-    border-radius: 10px;
-    outline: 1px solid green;
 }

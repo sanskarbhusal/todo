@@ -59,7 +59,7 @@ function TodoItem({ text, uuid, html_id, removeTodoItem }: { text: string, uuid:
     }
 
     return (
-        <div className=" w-full h-fit flex flex-row w-30 gap-2 p-1 bg-blue-400/80 shadow-inner rounded-md"
+        <div className=" w-full h-fit flex flex-row w-30 gap-2 p-1 bg-blue-300 shadow-inner rounded-md"
             id={html_id}
         >
             <textarea className="w-full resize-none min-h-12 text-wrap overflow-y-auto overflow-x-hidden p-2 rounded-2xl border-none disabled:text-black bg-white disabled:bg-gray-100 outline-blue-700 "
@@ -71,7 +71,7 @@ function TodoItem({ text, uuid, html_id, removeTodoItem }: { text: string, uuid:
 
             <div className="flex flex-col justify-center gap-2 bg-transparent rounded-2xl ">
                 <button
-                    className="h-6 self-center w-full text-red-800 border-red-500 rounded-md hover:bg-red-500 bg-white hover:text-white active:text-black transition-colors"
+                    className="h-6 pl-2 pr-2 self-center w-full text-red-800 border-red-500 rounded-md hover:bg-red-500 bg-white hover:text-white active:text-black transition-colors"
                     onClick={() => {
                         removeTodoItem(id)
                     }}>

@@ -7,8 +7,8 @@ const url = import.meta.env.VITE_url2
 
 export default function Login() {
 
-    const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
-    const [password, setPassword] = useState("admin")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const [error, setError] = useState({ message: "Error message", happened: false })
 
     const navigate = useNavigate()
@@ -54,28 +54,28 @@ export default function Login() {
     }
 
     return (
-        <div className="w-fit h-fit flex flex-col gap-4 p-3 pt-0 font-sans border-1 border-solid border-blue-400 shadow-xl rounded-md">
-            <p className="font-mono font-black text-2xl text-blue-500">
-                Login
+        <div className="w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
+            <div className="font-mono font-black text-3xl text-blue-500 drop-shadow-md mb-6">
+                <p className="drop-shadow-md hover:drop-shadow-2xl">Login</p>
                 {error.happened ? <span className="text-red-500 ml-8 font-sans font-medium text-sm">{error.message}</span> : ""}
-            </p>
+            </div>
             <div className="flex flex-col gap-6">
 
                 <div className="flex justify-between">
-                    <label>Email</label>
+                    <label className="self-center">Email</label>
                     <input
-                        className="blue-input transition-all "
-                        type="text"
+                        className="h-[31px] w-64 ml-2 pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
+                        type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         onFocus={() => setError({ message: "", happened: false })}
                     />
                 </div>
-                <div className="flex justify-between gap-5">
-                    <label>Password</label>
+                <div className="flex justify-between">
+                    <label className="self-center">Password</label>
                     <input
-                        className="blue-input transition-all "
+                        className="h-[31px] w-64 ml-3 pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                         type="password"
                         placeholder="Password"
                         value={password}
@@ -84,16 +84,31 @@ export default function Login() {
                     />
                 </div>
 
+                <div className="w-full flex justify-between items-center mt-3">
+                    <div className="mt-[2px] flex gap-2 ">
+                        <input id="remember-me" type="checkbox" />
+                        <label htmlFor="remember-me" className="text-blue-500">Remember me</label>
+                    </div>
+                    <a
+                        className="flex justify-end text-blue-500"
+                        href={"register"}
+                    >
+                        Forgot password?
+                    </a>
+                </div>
                 <button
-                    className="w-20 self-center mt-4 border-blue-500 rounded-xl border-1 p-1 px-3 bg-white text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
+                    className=" w-20 self-center bg-white border-blue-500 rounded-xl border-[1px] p-1 px-3 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
                     onClick={handleLogin}
                 >
                     Login
                 </button>
-                <span className="w-full flex justify-center">
+                <span className="w-full flex justify-center ">
                     <a
                         className="text-blue-500 hover:underline"
-                        href={"register"}>Don't have account?</a>
+                        href={"register"}
+                    >
+                        Don't have account?
+                    </a>
                 </span>
             </div>
         </div>

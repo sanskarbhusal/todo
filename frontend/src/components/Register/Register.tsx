@@ -1,5 +1,4 @@
 import { useState } from "react"
-import zod from "zod"
 
 const url = import.meta.env.VITE_url2
 
@@ -50,15 +49,15 @@ export default function Register() {
 
     }
     if (!registered) return (
-        <div className="w-fit h-fit flex flex-col gap-5 p-3 font-sans border-1 border-solid border-green-400 shadow-xl rounded-md">
-            <div className="h-12 flex flex-col font-mono font-black text-2xl text-green-500">
-                Create Account
+        <div className="w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
+            <div className="font-mono font-black text-3xl text-blue-500 drop-shadow-md mb-5">
+                <p className="drop-shadow-md hover:drop-shadow-2xl">Create Account</p>
                 {error.happened ? <span className="text-red-500 font-sans text-wrap text-center font-medium text-sm">{error.message}!</span> : ""}
             </div>
             <div className="flex justify-between gap-5">
                 <label>Firstname</label>
                 <input
-                    className="green-input transition-all "
+                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="text"
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
@@ -68,7 +67,7 @@ export default function Register() {
             <div className="flex justify-between">
                 <label>Lastname</label>
                 <input
-                    className="green-input transition-all "
+                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="text"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
@@ -78,7 +77,7 @@ export default function Register() {
             <div className="flex justify-between">
                 <label>Email</label>
                 <input
-                    className="green-input transition-all "
+                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -88,7 +87,7 @@ export default function Register() {
             <div className="flex justify-between">
                 <label>Password</label>
                 <input
-                    className="green-input transition-all "
+                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -99,7 +98,7 @@ export default function Register() {
             <div className="flex justify-between gap-3">
                 <label>Confirm Password</label>
                 <input
-                    className="green-input transition-all "
+                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="password"
                     value={cpassword}
                     onChange={(e) => setCpassword(e.target.value)}
@@ -107,7 +106,7 @@ export default function Register() {
                 />
             </div>
             <button
-                className="w-20 self-center mt-4 mb-4 bg-white border-green-500 rounded-xl border-1 p-1 px-3 text-green-500 hover:bg-green-500 hover:text-white transition-colors"
+                className="w-20 self-center mt-4 mb-4 bg-white border-blue-500 rounded-xl border-[1px] p-1 px-3 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
                 onClick={handleSubmit}
             >
                 Submit
