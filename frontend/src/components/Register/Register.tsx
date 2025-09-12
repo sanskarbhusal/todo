@@ -58,7 +58,7 @@ export default function Register() {
             <div className="flex justify-between gap-5">
                 <label>Firstname</label>
                 <input
-                    className="register-input transition-all "
+                    className="green-input transition-all "
                     type="text"
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
@@ -68,7 +68,7 @@ export default function Register() {
             <div className="flex justify-between">
                 <label>Lastname</label>
                 <input
-                    className="register-input transition-all "
+                    className="green-input transition-all "
                     type="text"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
@@ -78,7 +78,7 @@ export default function Register() {
             <div className="flex justify-between">
                 <label>Email</label>
                 <input
-                    className="register-input transition-all "
+                    className="green-input transition-all "
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -88,7 +88,7 @@ export default function Register() {
             <div className="flex justify-between">
                 <label>Password</label>
                 <input
-                    className="register-input transition-all "
+                    className="green-input transition-all "
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -99,7 +99,7 @@ export default function Register() {
             <div className="flex justify-between gap-3">
                 <label>Confirm Password</label>
                 <input
-                    className="register-input transition-all "
+                    className="green-input transition-all "
                     type="password"
                     value={cpassword}
                     onChange={(e) => setCpassword(e.target.value)}

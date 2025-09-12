@@ -232,7 +232,7 @@ function App(): JSX.Element {
         <div className="h-fit w-fit flex flex-col font-serif gap-4 " >
             <div className="flex">
                 <input
-                    className="w-full h-7 text-center text-sm font-medium font-sans border-1 border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full focus:placeholder:text-transparent"
+                    className="w-full h-7 text-center text-sm font-medium font-sans border-1 border-solid border-blue-500 outline-blue-500 bg-white shadow-inner shadow-blue-200 rounded-full focus:placeholder:text-transparent"
                     placeholder="Search"
                     ref={searchBoxRef}
                     type="text"
@@ -247,10 +247,10 @@ function App(): JSX.Element {
                     }}
                 />
             </div>
-            <div className="h-96 w-96 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-[14px] p-[14px] border-1 border-solid border-purple-500 shadow-inner shadow-purple-300 rounded-md"
+            <div className="h-96 w-96 flex flex-col items-center overflow-y-auto overflow-x-hidden gap-[14px] p-[14px] border-1 border-solid border-blue-500 shadow-inner shadow-blue-200 rounded-md"
             >
                 {
-                    loading ? <LoadingSpinner size={30} className="text-purple-400" /> : list.map((item) => {
+                    loading ? <LoadingSpinner size={30} className="text-blue-400" /> : list.map((item) => {
                         return <TodoItem key={item._id} text={item.text} uuid={item._id} html_id={item._id} removeTodoItem={removeTodoItem} />
 
                     })
@@ -264,7 +264,7 @@ function App(): JSX.Element {
 
             <div className="flex gap-2 ">
                 <input
-                    className="w-full h-7 pl-4 border-1 border-solid border-purple-500 outline-purple-500 bg-white shadow-inner shadow-purple-200 rounded-full"
+                    className="w-full h-7 pl-4 border-1 border-solid border-blue-500 outline-blue-500 bg-white shadow-inner shadow-blue-200 rounded-full"
                     value={todoText}
                     placeholder="Add todo"
                     type="text"
@@ -282,7 +282,7 @@ function App(): JSX.Element {
                 />
             </div>
             <button
-                className="w-[30%] h-7 self-center font-semibold font-sans border-purple-400 rounded-full bg-white active:bg-purple-400 active:text-white hover:shadow-xl"
+                className="w-[30%] h-7 self-center font-semibold font-sans border-blue-400 rounded-full bg-white active:bg-blue-400 active:text-white hover:shadow-xl"
                 onClick={() => {
                     setLoadLimit(prev => { return prev + 4 })
                 }}

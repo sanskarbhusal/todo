@@ -14,24 +14,15 @@ export default function Login() {
     const navigate = useNavigate()
 
     async function handleLogin() {
-        let response
-        try {
-            response = await fetch(`${url}/login`, {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                method: "POST",
-                body: JSON.stringify({ email, password })
-            })
-        } catch (error) {
-            const err = error as Error
-            console.log(err)
-        }
 
-        if (response === undefined) {
-            return alert("Server offline !!!")
-        }
+        const response = await fetch(`${url}/login`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            method: "POST",
+            body: JSON.stringify({ email, password })
+        })
 
         if (!response.ok) {
             switch (response.status) {
@@ -55,7 +46,7 @@ export default function Login() {
         const ResponseShape = zod.object({
             message: zod.string(),
         })
-        const result = ResponseShape.safeParse(response)
+        const result = ResponseShape.safeParse(ResponseShape)
 
         if (!result.success) {
             throw Error("Invalid json from the server")
@@ -73,7 +64,7 @@ export default function Login() {
                 <div className="flex justify-between">
                     <label>Email</label>
                     <input
-                        className="login-input transition-all "
+                        className="blue-input transition-all "
                         type="text"
                         placeholder="Email"
                         value={email}
@@ -84,7 +75,7 @@ export default function Login() {
                 <div className="flex justify-between gap-5">
                     <label>Password</label>
                     <input
-                        className="login-input transition-all "
+                        className="blue-input transition-all "
                         type="password"
                         placeholder="Password"
                         value={password}

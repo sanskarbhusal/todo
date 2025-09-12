@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import LoadingSpinner from "../LoadingSpinner"
 import { useNavigate } from "react-router"
 
@@ -15,11 +15,14 @@ type TextArea = {
 
 function TodoItem({ text, uuid, html_id, removeTodoItem }: { text: string, uuid: string, html_id: string, removeTodoItem: (uuid: string) => void }) {
 
-    let [id] = useState(uuid)
-    let [newText, setNewText] = useState(text)
-    let [textArea, setTextArea] = useState<TextArea>({ disabled: true, updatePending: false, buttonText: "edit" })
-    let [status, setStatus] = useState(0)
-    let navigate = useNavigate()
+    const [id] = useState(uuid)
+    const [newText, setNewText] = useState(text)
+    const [textArea, setTextArea] = useState<TextArea>({ disabled: true, updatePending: false, buttonText: "edit" })
+    const [status, setStatus] = useState(0)
+    const navigate = useNavigate()
+    // const [theme, setTheme] = useState({})
+
+    // const themeContext = useContext(theme)
 
     async function handleUpdateText() {
 
@@ -56,10 +59,10 @@ function TodoItem({ text, uuid, html_id, removeTodoItem }: { text: string, uuid:
     }
 
     return (
-        <div className=" w-full h-fit flex flex-row w-30 gap-2 p-1 bg-purple-300 shadow-inner rounded-md"
+        <div className=" w-full h-fit flex flex-row w-30 gap-2 p-1 bg-blue-400/80 shadow-inner rounded-md"
             id={html_id}
         >
-            <textarea className="w-full resize-none min-h-12 text-wrap overflow-y-auto overflow-x-hidden p-2 rounded-2xl border-none disabled:text-black bg-white disabled:bg-purple-100 outline-purple-700 "
+            <textarea className="w-full resize-none min-h-12 text-wrap overflow-y-auto overflow-x-hidden p-2 rounded-2xl border-none disabled:text-black bg-white disabled:bg-gray-100 outline-blue-700 "
                 value={newText}
                 onChange={(e) => { setNewText(e.target.value) }}
                 disabled={textArea.disabled}
@@ -68,7 +71,7 @@ function TodoItem({ text, uuid, html_id, removeTodoItem }: { text: string, uuid:
 
             <div className="flex flex-col justify-center gap-2 bg-transparent rounded-2xl ">
                 <button
-                    className="h-6 self-center w-full text-purple-800 border-purple-500 rounded-md hover:bg-purple-500 hover:text-white active:text-black transition-colors"
+                    className="h-6 self-center w-full text-red-800 border-red-500 rounded-md hover:bg-red-500 bg-white hover:text-white active:text-black transition-colors"
                     onClick={() => {
                         removeTodoItem(id)
                     }}>
@@ -76,7 +79,7 @@ function TodoItem({ text, uuid, html_id, removeTodoItem }: { text: string, uuid:
                 </button>
 
                 <button
-                    className="h-6 self-center w-full text-purple-800 border-purple-500 rounded-md hover:bg-purple-500 hover:text-white active:text-black"
+                    className="h-6 self-center w-full text-green-800 border-blue-500 rounded-md bg-white hover:bg-blue-500 hover:text-white active:text-black"
                     onClick={() => {
                         setTextArea((prev) => {
                             if (prev.disabled) {

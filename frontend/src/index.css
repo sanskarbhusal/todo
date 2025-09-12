@@ -11,12 +11,21 @@ body {
     height: 100dvh;
 }
 
-.login-input {
+/* blue theme */
+.blue-input {
     height: 23px;
     width: 220px;
     border: 1px solid blue;
     border-radius: 10px;
-    outline: none;
+    outline: 1px solid green;
+    padding-left: 8px;
+}
+
+.blue-input-border {
+
+    border: 1px solid blue;
+    border-radius: 10px;
+    outline: 1px solid green;
     padding-left: 8px;
 }
 
@@ -26,16 +35,23 @@ body {
 }
 
 
-.register-input {
+/* green theme*/
+.green-input {
     height: 23px;
     width: 220px;
     border: 1px solid green;
     border-radius: 10px;
-    outline: none;
-    padding-left: 8px;
+    outline: 1px solid green;
 }
 
-.register-input:focus {
+.green-input:focus {
     box-shadow: 0 0 0 3px lightgreen;
     border: 1px solid transparent
+}
+
+.green-input-border {
+
+    border: 1px solid green;
+    border-radius: 10px;
+    outline: 1px solid green;
 }
