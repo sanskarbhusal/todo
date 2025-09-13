@@ -6,9 +6,9 @@ const url = import.meta.env.VITE_url2
 export default function PasswordForm() {
 
     // state hooks
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [cpassword, setCpassword] = useState("")
+    const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
+    const [password, setPassword] = useState("root")
+    const [cpassword, setCpassword] = useState("root")
     const [error, setError] = useState({ message: "your message", happened: false })
 
     // other hooks
@@ -16,37 +16,36 @@ export default function PasswordForm() {
 
 
     async function handleSubmit() {
-
-        navigate("/otpForm")
         // password validaton
         if (password !== cpassword) {
             return setError({ message: "Password didn't match", happened: true })
         }
 
         // POST form data
-        const response = await fetch(`${url}/register`, {
+        const response = await fetch(`${url}/requestNewPassword`, {
             headers: { "Content-Type": "application/json" },
             method: "POST",
+            credentials: "include",
             body: JSON.stringify(
                 {
                     email,
-                    password
+                    newPassword: password
                 }
             )
         })
 
         if (!response.ok) {
             switch (response.status) {
-                case 400:
-                    return console.log("Server: HTTP body from client doesn't comply with the expected shape.")
-                case 409:
-                    return setError({ message: "Email already taken.", happened: true })
+                case 404:
+                    return console.log("Email doesn't exist")
                 case 500:
                     return setError({ message: "Problem in server", happened: true })
                 default:
                     return setError({ message: "Unknown response from server", happened: true })
             }
         }
+        console.log(await response.json())
+        navigate("/otpForm", { replace: true })
 
     }
     return (

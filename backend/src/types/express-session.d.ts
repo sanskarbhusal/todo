@@ -1,11 +1,6 @@
 import "express-session"
 
 
-interface User {
-
-}
-
-
 declare module "express-session" {
 
     interface SessionData {
@@ -16,6 +11,8 @@ declare module "express-session" {
         email: string
         displayPicture: string
 
+        hasPasswordRequestSession: boolean
+        OTP: number
+        newPassword: string
     }
-
 }

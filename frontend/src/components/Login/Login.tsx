@@ -7,8 +7,8 @@ const url = import.meta.env.VITE_url2
 
 export default function Login() {
 
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
+    const [password, setPassword] = useState("admin")
     const [error, setError] = useState({ message: "Error message", happened: false })
 
     const navigate = useNavigate()

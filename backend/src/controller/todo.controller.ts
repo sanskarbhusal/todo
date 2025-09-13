@@ -1,11 +1,92 @@
 import { User, UsersTodoList } from "../model/todo.model.js"
 import zod from "zod"
 import bcrypt from "bcrypt"
-import type { Request, Response } from "express"
 import { v4 as uuidv4 } from "uuid"
+import sendOTP from "../utils/sendOTP.ts"
+
+import type { Request, Response } from "express"
+
+// Working: Prototyping done
+const requestNewPassword = async (req: Request, res: Response) => {
+
+    // payload(Body) validation
+    const bodyShape = zod.object({
+        email: zod.string(),
+        newPassword: zod.string()
+    })
+
+    const result = bodyShape.safeParse(req.body)
+    if (!result.success) {
+        return res.status(400).json({ message: "Invalid json/data." })
+    }
+
+    //request processing
+    const { email, newPassword } = req.body
+
+    try {
+        const user = await User.findOne({ email })
+
+        if (user === null) return res.status(404).json({ message: "Email doesn't exist." })
+
+        const userName = user.firstname
+
+        req.session.email = email
+        req.session.newPassword = newPassword
+        req.session.OTP = Math.floor(Math.random() * 100000)
+        req.session.hasPasswordRequestSession = true
+
+        const otp = await sendOTP(userName, req.session.OTP, email)
+
+        if (!otp.isSent) {
+            return res.status(500).json({ message: "something wrong with OTP agent" })
+        } else {
+            return res.status(200).json({ message: "success" })
+        }
+
+    } catch (error) {
+        const err = error as Error
+        console.log(err.message)
+        res.status(500).json({ message: "Database error" })
+    }
+}
 
 
-//done
+// working: Prototyping done
+const authorizeNewPassword = async (req: Request, res: Response) => {
+    // payload(Body) validation
+    const bodyShape = zod.object({
+        OTP: zod.number()
+    })
+
+    const result = bodyShape.safeParse(req.body)
+    if (!result.success) {
+        return res.status(400).json({ message: "Invalid json/data." })
+    }
+
+    // request processing
+    const { OTP } = req.body
+    //session verification
+    if (!req.session.hasPasswordRequestSession) return res.status(403).json({ message: "Please initate new password request first." })
+    // OTP verification
+    if (OTP !== req.session.OTP) return res.status(401).json({ message: "Wrong OTP" })
+
+    // password updation
+    try {
+        const user = await User.findOne({ email: req.session.email })
+        if (user === null) return res.status(500).json({ message: "Query failed! Possibly a bug." })
+        //working
+        const hashedPassword = await bcrypt.hash(req.session.newPassword!, 10)
+        user.password = hashedPassword
+        user.save()
+        res.status(200).json({ message: "success" })
+    } catch (error) {
+        const err = error as Error
+        console.log(err.message)
+        res.status(500).json({ message: "Database error" })
+    }
+}
+
+
 const addTodoItem = async (req: Request, res: Response) => {
 
     // authentication
@@ -47,7 +128,6 @@ const addTodoItem = async (req: Request, res: Response) => {
 }
 
 
-// done
 const getTodoList = async (req: Request, res: Response) => {
 
     // authentication
@@ -98,7 +178,6 @@ const getTodoList = async (req: Request, res: Response) => {
 }
 
 
-// done
 const editTodoItem = async (req: Request, res: Response) => {
 
 
@@ -121,11 +200,11 @@ const editTodoItem = async (req: Request, res: Response) => {
     const BodyValidation = BodyShape.safeParse(req.body)
 
     if (!QueryValidation.success) {
-        res.status(400).json({ message: "Invalid query param" })
+        return res.status(400).json({ message: "Invalid query param" })
     }
 
     if (!BodyValidation.success) {
-        res.status(400).json({ message: "Invalid JSON payload on body." })
+        return res.status(400).json({ message: "Invalid JSON payload on body." })
     }
 
     //request processing
@@ -149,7 +228,6 @@ const editTodoItem = async (req: Request, res: Response) => {
 }
 
 
-//done
 const deleteTodoItem = async (req: Request, res: Response) => {
 
     // authentication
@@ -176,7 +254,7 @@ const deleteTodoItem = async (req: Request, res: Response) => {
     try {
         const usersTodoList = await UsersTodoList.findOne({ email })
         if (usersTodoList === null) return res.status(500).json({ message: "Query failed. Possibly a bug" })
-        const targetTodo = usersTodoList.todoList.find(item => item._id == _id)
+        const targetTodo = usersTodoList.todoList.find(item => item._id === _id)
         const indexOfTargetTodo = usersTodoList.todoList.indexOf(targetTodo!)
         // splice(2,1) removes 1 element starting from element at index 2
         usersTodoList.todoList.splice(indexOfTargetTodo, 1)
@@ -190,7 +268,6 @@ const deleteTodoItem = async (req: Request, res: Response) => {
     }
 }
 
-//done
 const search = async (req: Request, res: Response) => {
 
     // authentication
@@ -285,7 +362,6 @@ const login = async (req: Request, res: Response) => {
 }
 
 
-//done
 const register = async (req: Request, res: Response) => {
 
     const BodyShape = zod.object({
@@ -325,28 +401,6 @@ const register = async (req: Request, res: Response) => {
     }
 }
 
-
-const hasSession = async (req: Request, res: Response) => {
-
-    const QueryShape = zod.object({
-        email: zod.email(),
-    })
-
-    const BodyValidation = QueryShape.safeParse(req.query)
-
-    if (!BodyValidation.success) {
-        return res.status(400).json({ message: "Invalid JSON payload." })
-    }
-
-    const { email, authenticated } = req.session
-
-    if (authenticated && req.query.email === email) {
-        return res.status(200).json({ message: "Success" })
-    } else {
-        return res.status(403).json({ message: "Unauthorized. No sesion found." })
-    }
-}
-
 export {
     addTodoItem,
     getTodoList,
@@ -355,5 +409,6 @@ export {
     search,
     login,
     register,
-    hasSession
+    requestNewPassword,
+    authorizeNewPassword
 }

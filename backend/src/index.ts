@@ -11,7 +11,8 @@ import {
     search,
     login,
     register,
-    hasSession
+    requestNewPassword,
+    authorizeNewPassword
 } from "./controller/todo.controller.js"
 
 
@@ -62,8 +63,12 @@ app.post("/todo-api/register", register)
 // login user
 app.post("/todo-api/login", login)
 
-// login user
-app.get("/todo-api/hasSession", hasSession)
+// New Password (forgot password)
+app.post("/todo-api/requestNewPassword", requestNewPassword)
+
+// authorize new Password
+app.post("/todo-api/authorizeNewPassword", authorizeNewPassword)
+
 
 //making database connection
 mongoose.connect(mongoDbUrl).then(() => {

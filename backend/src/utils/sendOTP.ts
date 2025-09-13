@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 dotenv.config()
 
 
-async function sendOtp(userName: string, otp: number, email: string) {
+async function sendOTP(userName: string, otp: number, email: string) {
 
     const getHtml = (userName: string, otp: number) => `
 <h2>Hi, @${userName}</h2>
@@ -26,20 +26,20 @@ async function sendOtp(userName: string, otp: number, email: string) {
         }
     })
 
-    let info
-
     try {
-        info = await transporter.sendMail({
-            from: 'jmessenger@sanskarbhusal.com.np',
+        const recepient = email.split("").join()
+        console.log(email)
+        const info = await transporter.sendMail({
+            from: process.env.zohoMail,
             to: email,
-            subject: "Change ToDo Password ",
+            subject: 'Change ToDo Password',
             html: getHtml(userName, otp)
         })
         return { info, isSent: true }
     } catch (err) {
         console.log("nodemailer error")
         console.log(err)
-        return { info, isSent: false }
+        return { isSent: false }
     }
 }
-export { sendOtp }
+export default sendOTP
