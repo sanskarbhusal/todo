@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type HTMLAttributes, type HTMLInputTypeAttribute } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router"
 import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"

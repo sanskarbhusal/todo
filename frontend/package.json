@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build && cp dist/index.html dist/404.html",
+    "deploy": "echo todo.sanskarbhusal.com.np > dist/CNAME && gh-pages -d dist"
   },
   "dependencies": {
     "react": "^18.2.0",
