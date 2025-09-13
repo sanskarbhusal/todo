@@ -305,6 +305,7 @@ const search = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
 
+    console.log("Login hit")
     // validation
     const BodyShape = zod.object({
         email: zod.email(),
