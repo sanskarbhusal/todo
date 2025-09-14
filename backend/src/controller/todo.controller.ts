@@ -364,7 +364,8 @@ const login = async (req: Request, res: Response) => {
 
 const register = async (req: Request, res: Response) => {
 
-    console.log("Registration request")
+    console.log("Registration request incomming")
+
     const BodyShape = zod.object({
         firstname: zod.string(),
         lastname: zod.string(),
