@@ -5,11 +5,11 @@ const url = import.meta.env.VITE_url2
 export default function Register() {
 
     // state hooks
-    const [firstname, setFirstname] = useState("")
-    const [lastname, setLastname] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [cpassword, setCpassword] = useState("")
+    const [firstname, setFirstname] = useState("Sanskar")
+    const [lastname, setLastname] = useState("Bhusal")
+    const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
+    const [password, setPassword] = useState("admin")
+    const [cpassword, setCpassword] = useState("admin")
     const [error, setError] = useState({ message: "your message", happened: false })
     const [registered, setRegistered] = useState(false)
 
