@@ -32,7 +32,7 @@ app.use(session({
     cookie: {
         maxAge: 86400000,
         sameSite: "lax",
-        secure: false,
+        secure: true,
         httpOnly: true,
     }
 }))

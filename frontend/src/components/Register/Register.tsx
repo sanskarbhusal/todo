@@ -24,7 +24,6 @@ export default function Register() {
             headers: {
                 "Content-Type": "application/json"
             },
-            credentials: "include",
             method: "POST",
             body: JSON.stringify(
                 {
