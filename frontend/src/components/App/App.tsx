@@ -254,7 +254,7 @@ function App(): JSX.Element {
                 }
 
                 {
-                    !searching && list.length == 0 ? <p className="z-10 h-full w-full flex justify-center items-center text-gray-600">Start typing to search</p> : ""
+                    searching && list.length == 0 ? <p className="z-10 h-full w-full flex justify-center items-center text-gray-600">Start typing to search</p> : ""
 
                 }
             </div>

@@ -117,5 +117,5 @@ export default function Register() {
             </button>
         </div>
     )
-    else return <div className="text-center text-2xl text-green-500">Your account has been registered. Goto <a href="/">home</a> page</div>
+    else return <div className="text-center text-2xl">Your account has been registered. Goto <a href="/">home</a> page</div>
 }

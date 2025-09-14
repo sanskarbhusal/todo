@@ -36,8 +36,18 @@ app.use(session({
         httpOnly: true,
     }
 }))
+const allowedOrign1 = process.env.allowedOrigin1
+const allowedOrign2 = process.env.allowedOrigin2
 app.use(cors({
-    origin: process.env.allowedOrigin,
+    // I'm allowing all the origin domains
+    origin: (origin, callback) => {
+        const allowed = [allowedOrign1, allowedOrign2]
+        if (!origin || allowed.includes(origin)) {
+            callback(null, origin)
+        } else {
+            callback(new Error("Origin not allowed."))
+        }
+    },
     credentials: true,
 }))
 
