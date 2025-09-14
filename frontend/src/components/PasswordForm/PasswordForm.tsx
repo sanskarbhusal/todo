@@ -37,7 +37,7 @@ export default function PasswordForm() {
         if (!response.ok) {
             switch (response.status) {
                 case 404:
-                    return console.log("Email doesn't exist")
+                    return setError({ message: "Email doesn't exist", happened: true })
                 case 500:
                     return setError({ message: "Problem in server", happened: true })
                 default:
