@@ -43,31 +43,31 @@ app.use(cors({
 
 
 // add todo
-app.post("/todo-api/addTodoItem", addTodoItem)
+app.post("/addTodoItem", addTodoItem)
 
 // get todo list
-app.get("/todo-api/getTodoList", getTodoList)
+app.get("/getTodoList", getTodoList)
 
 // edit text of todo item
-app.patch("/todo-api/editTodoItem", editTodoItem)
+app.patch("/editTodoItem", editTodoItem)
 
 // remove a todo item
-app.delete("/todo-api/deleteTodoItem", deleteTodoItem)
+app.delete("/deleteTodoItem", deleteTodoItem)
 
 // search todo items
-app.get("/todo-api/search", search)
+app.get("/search", search)
 
 // register user
-app.post("/todo-api/register", register)
+app.post("/register", register)
 
 // login user
-app.post("/todo-api/login", login)
+app.post("/login", login)
 
 // New Password (forgot password)
-app.post("/todo-api/requestNewPassword", requestNewPassword)
+app.post("/requestNewPassword", requestNewPassword)
 
 // authorize new Password
-app.post("/todo-api/authorizeNewPassword", authorizeNewPassword)
+app.post("/authorizeNewPassword", authorizeNewPassword)
 
 
 //making database connection
