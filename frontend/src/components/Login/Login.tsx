@@ -103,12 +103,14 @@ export default function Login() {
                     Login
                 </button>
                 <span className="w-full flex justify-center ">
-                    <a
+                    <button
                         className="text-blue-500 hover:underline"
-                        href={"register"}
+                        onClick={() => {
+                            navigate("/register")
+                        }}
                     >
                         Don't have account?
-                    </a>
+                    </button>
                 </span>
             </div>
         </div>
