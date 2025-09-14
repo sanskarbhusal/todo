@@ -25,13 +25,15 @@ const sessionSecret = process.env.sessionSecret || "default secret"
 
 //middlewares
 app.use(express.json())
+
+app.set("trust proxy", 1) // important if behind proxy ( I've used NGINX reverse proxy to handle requests.)
 app.use(session({
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
         maxAge: 86400000,
-        sameSite: "lax",
+        sameSite: "none",
         secure: true,
         httpOnly: true,
     }
