@@ -228,7 +228,7 @@ function App(): JSX.Element {
         }
     }
     return (
-        <div className="h-fit w-fit flex flex-col font-sans gap-4 drop-shadow-md" >
+        <div className="h-fit sm:w-fit flex flex-col font-sans gap-4 drop-shadow-md" >
             <input
                 className="h-9 w-full text-center border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                 placeholder="Search"
@@ -252,10 +252,12 @@ function App(): JSX.Element {
 
                     })
                 }
-
                 {
-                    searching && list.length == 0 ? <p className="z-10 h-full w-full flex justify-center items-center text-gray-600">Start typing to search</p> : ""
+                    searching && list.length == 0 && !loading ? <p className="z-10 h-full w-full flex justify-center items-center text-gray-600">Start typing to search</p> : ""
 
+                }
+                {
+                    !searching && list.length === 0 && !loading ? <p className="z-10 h-full w-full flex justify-center items-center text-gray-600"> You have no TODOs </p> : ""
                 }
             </div>
             <input

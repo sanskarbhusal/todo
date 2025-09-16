@@ -5,11 +5,11 @@ const url = import.meta.env.VITE_url2
 export default function Register() {
 
     // state hooks
-    const [firstname, setFirstname] = useState("Sanskar")
-    const [lastname, setLastname] = useState("Bhusal")
-    const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
-    const [password, setPassword] = useState("admin")
-    const [cpassword, setCpassword] = useState("admin")
+    const [firstname, setFirstname] = useState("")
+    const [lastname, setLastname] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [cpassword, setCpassword] = useState("")
     const [error, setError] = useState({ message: "your message", happened: false })
     const [registered, setRegistered] = useState(false)
 
@@ -52,7 +52,7 @@ export default function Register() {
 
     }
     if (!registered) return (
-        <div className="w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
+        <div className="w-[97vw] sm:w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
             <div className="font-mono font-black text-3xl text-blue-500 drop-shadow-md mb-5">
                 <p className="drop-shadow-md hover:drop-shadow-2xl">Create Account</p>
                 {error.happened ? <span className="text-red-500 font-sans text-wrap text-center font-medium text-sm">{error.message}!</span> : ""}

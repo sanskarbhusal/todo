@@ -7,8 +7,8 @@ const url = import.meta.env.VITE_url2
 
 export default function Login() {
 
-    const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
-    const [password, setPassword] = useState("admin")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const [error, setError] = useState({ message: "Error message", happened: false })
 
     const navigate = useNavigate()
@@ -54,7 +54,7 @@ export default function Login() {
     }
 
     return (
-        <div className="w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
+        <div className="w-[97vw] sm:w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
             <div className="font-mono font-black text-3xl text-blue-500 drop-shadow-md mb-6">
                 <p className="drop-shadow-md hover:drop-shadow-2xl">Login</p>
                 {error.happened ? <span className="text-red-500 ml-8 font-sans font-medium text-sm">{error.message}</span> : ""}
@@ -86,7 +86,7 @@ export default function Login() {
 
                 <div className="w-full flex justify-between items-center mt-3">
                     <div className="mt-[2px] flex gap-2 ">
-                        <input id="remember-me" type="checkbox" />
+                        <input id="remember-me" type="checkbox" onClick={() => { alert("This feature is under construction &#128517;") }} />
                         <label htmlFor="remember-me" className="text-blue-500">Remember me</label>
                     </div>
                     <a

@@ -6,9 +6,9 @@ const url = import.meta.env.VITE_url2
 export default function PasswordForm() {
 
     // state hooks
-    const [email, setEmail] = useState("sanskarbhusal123@gmail.com")
-    const [password, setPassword] = useState("root")
-    const [cpassword, setCpassword] = useState("root")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [cpassword, setCpassword] = useState("")
     const [error, setError] = useState({ message: "your message", happened: false })
 
     // other hooks
@@ -49,7 +49,7 @@ export default function PasswordForm() {
 
     }
     return (
-        <div className="w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
+        <div className="sm:w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
             <div className="font-mono font-black text-3xl text-blue-500 drop-shadow-md mb-6">
                 <p className="drop-shadow-md hover:drop-shadow-2xl">Change Password</p>
                 {error.happened ? <span className="text-red-500 font-sans text-wrap text-center font-medium text-sm">{error.message}!</span> : ""}
@@ -57,7 +57,7 @@ export default function PasswordForm() {
             <div className="flex justify-between">
                 <label>Email</label>
                 <input
-                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
+                    className="h-[31px] w-60 pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -67,7 +67,7 @@ export default function PasswordForm() {
             <div className="flex justify-between">
                 <label>New password</label>
                 <input
-                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
+                    className="h-[31px] w-60 pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -78,7 +78,7 @@ export default function PasswordForm() {
             <div className="flex justify-between gap-3">
                 <label>Re-type new password</label>
                 <input
-                    className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
+                    className="h-[31px] w-60 pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
                     type="password"
                     value={cpassword}
                     onChange={(e) => setCpassword(e.target.value)}
