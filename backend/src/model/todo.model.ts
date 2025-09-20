@@ -58,7 +58,16 @@ const UsersTodoListSchema = new mongoose.Schema({
     todoList: [TodoItemSchema]
 })
 
+const LeasedEmailSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true
+    }
+})
 
 const User = mongoose.model("User", UserSchema, "users")
 const UsersTodoList = mongoose.model("UserTodoList", UsersTodoListSchema, "usersTodoLists")
-export { User, UsersTodoList }
+const LeasedEmail = mongoose.model("LeasedEmail", LeasedEmailSchema, "leasedEmails")
+export { User, UsersTodoList, LeasedEmail }

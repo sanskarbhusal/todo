@@ -1,12 +1,31 @@
-import { User, UsersTodoList } from "../model/todo.model.js"
+import { User, UsersTodoList, LeasedEmail } from "../model/todo.model.js"
 import zod from "zod"
 import bcrypt from "bcrypt"
 import { v4 as uuidv4 } from "uuid"
-import sendOTP from "../utils/sendOTP.ts"
+import sendMail from "../utils/sendOTP.ts"
+import dotenv from "dotenv"
+
+
+dotenv.config()
+
+
+let apiURL: string
+let origin: string
+let env: string
+
+if (process.env.type === "local") {
+    env = process.env.type || "local"
+    origin = process.env.originLocal || "http://localhost:5173"
+    apiURL = process.env.apiURLLocal || "http://localhost:8080"
+} else {
+    env = process.env.type || "local"
+    origin = process.env.originLocal || "http://localhost:5173"
+    apiURL = process.env.apiURLProduction || "https://localhost:8080"
+}
+
 
 import type { Request, Response } from "express"
 
-// Working: Prototyping done
 const requestNewPassword = async (req: Request, res: Response) => {
 
     // payload(Body) validation
@@ -35,7 +54,7 @@ const requestNewPassword = async (req: Request, res: Response) => {
         req.session.OTP = Math.floor(Math.random() * 100000)
         req.session.hasPasswordRequestSession = true
 
-        const otp = await sendOTP(userName, req.session.OTP, email)
+        const otp = await sendMail(userName, email, "authorizeNewPassword", req.session.OTP)
 
         if (!otp.isSent) {
             return res.status(500).json({ message: "something wrong with OTP agent" })
@@ -51,7 +70,6 @@ const requestNewPassword = async (req: Request, res: Response) => {
 }
 
 
-// working: Prototyping done
 const authorizeNewPassword = async (req: Request, res: Response) => {
     // payload(Body) validation
     const bodyShape = zod.object({
@@ -66,7 +84,11 @@ const authorizeNewPassword = async (req: Request, res: Response) => {
     // request processing
     const { OTP } = req.body
     //session verification
-    if (!req.session.hasPasswordRequestSession) return res.status(403).json({ message: "Please initate new password request first." })
+    if (!req.session.hasPasswordRequestSession) {
+        return res.status(403).json({ message: "Please initate new password request first." })
+    } else {
+        req.session.hasPasswordRequestSession = true
+    }
     // OTP verification
     if (OTP !== req.session.OTP) return res.status(401).json({ message: "Wrong OTP" })
 
@@ -74,7 +96,6 @@ const authorizeNewPassword = async (req: Request, res: Response) => {
     try {
         const user = await User.findOne({ email: req.session.email })
         if (user === null) return res.status(500).json({ message: "Query failed! Possibly a bug." })
-        //working
         const hashedPassword = await bcrypt.hash(req.session.newPassword!, 10)
         user.password = hashedPassword
         user.save()
@@ -362,9 +383,8 @@ const login = async (req: Request, res: Response) => {
 }
 
 
-const register = async (req: Request, res: Response) => {
-
-    console.log("Registration request incomming")
+// working
+const requestRegistration = async (req: Request, res: Response) => {
 
     const BodyShape = zod.object({
         firstname: zod.string(),
@@ -379,24 +399,89 @@ const register = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Invalid JSON payload." })
     }
 
+    // request processing
     try {
-        let queryResult = await User.findOne({ email: req.body.email })
+        const { firstname, lastname, email, password } = req.body
+        const foundLeasedEmail = await LeasedEmail.findOne({ email })
+        const foundUser = await User.findOne({ email })
 
-        if (queryResult === null) {
-            const hashedPassword = await bcrypt.hash(req.body.password, 10)
-            const user = new User({ ...req.body, password: hashedPassword })
-            const usersTodoList = new UsersTodoList({
-                email: req.body.email,
-                todoList: []
-            })
-            await user.save()
-            await usersTodoList.save()
-            res.status(200).json({ message: "success" })
+        if (foundLeasedEmail) return res.status(409).json({ message: "Email is in lease." })
+
+        if (foundUser === null) {
+            // create and add a new document of LeasedEmail model in leasedEmails collection
+            await new LeasedEmail({
+                email
+            }).save()
+
+            req.session.hasRegistrationSession = true
+            req.session.firstname = firstname
+            req.session.lastname = lastname
+            req.session.email = email
+            req.session.password = password
+            let token: string
+            if (env === "local") {
+                token = Math.floor(Math.random() * 1000000) + ""
+                req.session.token = token
+                return res.status(308).json({ message: "Email available", redirectURL: `${apiURL}/api/v1/authorizeRegistration/${token}` })
+            } else {
+                token = uuidv4()
+                req.session.token = token
+                sendMail(req.session.firstname!, req.session.email!, "authorizeRegistration", 0, `${apiURL}/api/v1/authorizeRegistration/${token}`)
+                return res.status(200).json({ message: "Success. Check your mail" })
+            }
         } else {
             //409: conflicting resource
             res.status(409).json({ message: "Email already registered" })
         }
     } catch (error) {
+        const err = error as Error
+        console.log(err.message)
+        res.status(500).json({ message: "Database error" })
+    }
+}
+
+
+// done
+const authorizeRegistration = async (req: Request, res: Response) => {
+
+    // body validation
+    const ParamShape = zod.object({
+        token: zod.string()
+    })
+
+    const ParamValidation = ParamShape.safeParse(req.params)
+
+    if (!ParamValidation.success) {
+        return res.status(400).json({ message: "Invalid JSON payload." })
+    }
+
+    // request processing
+    try {
+        const { email, firstname, lastname, password, token } = req.session
+
+        if (!req.session.hasRegistrationSession) {
+            return res.status(409).json({ message: "Restricted. Please initiate registration request first." })
+        } else {
+            req.session.hasRegistrationSession = false
+        }
+
+        if (req.params.token !== token) {
+            return res.status(403).json({ message: "Invalid token" })
+        }
+
+        let foundLeasedEmail = await LeasedEmail.findOne({ email })
+
+        if (foundLeasedEmail !== null) {
+            await LeasedEmail.findOneAndDelete({ email })
+            const hashedPassword = await bcrypt.hash(password!, 10)
+            await new User({ email, firstname, lastname, password: hashedPassword }).save()
+            await new UsersTodoList({ email, todoList: [] }).save()
+            return res.status(200).json({ message: "success" })
+        } else {
+            return res.status(409).json({ message: "Session corrupted. Please reinitiate registration" })
+        }
+    } catch (error) {
+        await User.findOneAndDelete({ email: req.session.email })
         const err = error as Error
         console.log(err.message)
         res.status(500).json({ message: "Database error" })
@@ -410,7 +495,8 @@ export {
     deleteTodoItem,
     search,
     login,
-    register,
     requestNewPassword,
-    authorizeNewPassword
+    authorizeNewPassword,
+    requestRegistration,
+    authorizeRegistration
 }

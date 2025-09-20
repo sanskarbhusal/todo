@@ -1,8 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from 'react-router'
 import zod from "zod"
-
-const url = import.meta.env.VITE_url2
+import url from "../../utils"
 
 
 export default function Login() {

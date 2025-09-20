@@ -4,8 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import TodoItem from "../TodoItem"
 import LoadingSpinner from "../LoadingSpinner"
 import zod from "zod"
-
-const url = import.meta.env.VITE_url2
+import url from "../../utils"
 
 
 //type definitions

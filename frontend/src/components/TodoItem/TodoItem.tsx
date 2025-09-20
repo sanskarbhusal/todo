@@ -1,9 +1,7 @@
 import { useState } from "react"
 import LoadingSpinner from "../LoadingSpinner"
 import { useNavigate } from "react-router"
-
-
-const url = import.meta.env.VITE_url2
+import url from "../../utils"
 
 
 type TextArea = {

@@ -1,17 +1,17 @@
 import { useState } from "react"
+import url from "../../utils"
+import StaticPage from "../StaticPage"
 
-const url = import.meta.env.VITE_url2
 
 export default function Register() {
-
     // state hooks
-    const [firstname, setFirstname] = useState("")
-    const [lastname, setLastname] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [cpassword, setCpassword] = useState("")
+    const [firstname, setFirstname] = useState("test")
+    const [lastname, setLastname] = useState("test")
+    const [email, setEmail] = useState("test@gmail.com")
+    const [password, setPassword] = useState("admin123")
+    const [cpassword, setCpassword] = useState("admin123")
     const [error, setError] = useState({ message: "your message", happened: false })
-    const [registered, setRegistered] = useState(false)
+    const [registrationStatus, setRegistrationStatus] = useState(0)
 
     async function handleSubmit() {
         // password validaton
@@ -19,8 +19,30 @@ export default function Register() {
             return setError({ message: "Password didn't match", happened: true })
         }
 
+        if (password.length < 6) {
+            return setError({ message: "Password should be atleast 6 characters long", happened: true })
+        }
+
+        const arr = password.split("")
+        if (
+            !(
+                arr.includes("1") ||
+                arr.includes("2") ||
+                arr.includes("3") ||
+                arr.includes("4") ||
+                arr.includes("5") ||
+                arr.includes("6") ||
+                arr.includes("7") ||
+                arr.includes("8") ||
+                arr.includes("9")
+            )
+        ) {
+            setError({ message: "Password should contain atleast a number!", happened: true })
+        }
+
+
         // POST form data
-        const response = await fetch(`${url}/register`, {
+        const response = await fetch(`${url}/requestRegistration`, {
             headers: {
                 "Content-Type": "application/json"
             },
@@ -37,6 +59,10 @@ export default function Register() {
 
         if (!response.ok) {
             switch (response.status) {
+                case 308:
+                    const responseJSON = await response.json()
+                    console.log(responseJSON)
+                    return window.location.href = responseJSON.redirectURL
                 case 400:
                     return console.log("Server: HTTP body from client doesn't comply with the expected shape.")
                 case 409:
@@ -48,10 +74,10 @@ export default function Register() {
             }
         }
 
-        setRegistered(response.ok)
+        setRegistrationStatus(200)
 
     }
-    if (!registered) return (
+    if (registrationStatus !== 200) return (
         <div className="w-[97vw] sm:w-fit h-fit flex flex-col gap-4 p-5 font-sans border-[1px] border-solid shadow-2xl rounded-2xl transition-all">
             <div className="font-mono font-black text-3xl text-blue-500 drop-shadow-md mb-5">
                 <p className="drop-shadow-md hover:drop-shadow-2xl">Create Account</p>
@@ -91,6 +117,7 @@ export default function Register() {
                 <label>Password</label>
                 <input
                     className="h-[31px] pl-2 border-solid border-blue-400 border-[1px] rounded-2xl focus:shadow-inner outline-none transition-colors "
+                    placeholder="6 characters with 1 number"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -116,5 +143,5 @@ export default function Register() {
             </button>
         </div>
     )
-    else return <div className="text-center text-2xl">Your account has been registered. Goto <a href="/">home</a> page</div>
+    else return <StaticPage text="Check your email to complete registration." />
 }

@@ -14,5 +14,9 @@ declare module "express-session" {
         hasPasswordRequestSession: boolean
         OTP: number
         newPassword: string
+
+        hasRegistrationSession: boolean
+        token: string
+        password: string
     }
 }

@@ -1,8 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
+import url from "../../utils"
 
-
-const url = import.meta.env.VITE_url2
 
 export default function OTPForm() {
 

@@ -3,6 +3,7 @@ import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import session from "express-session"
+import path from "path"
 import {
     addTodoItem,
     getTodoList,
@@ -10,20 +11,34 @@ import {
     deleteTodoItem,
     search,
     login,
-    register,
+    requestRegistration,
+    authorizeRegistration,
     requestNewPassword,
     authorizeNewPassword
 } from "./controller/todo.controller.js"
 
 
 dotenv.config()
+
+
+let allowedOrigin
+
+if (process.env.type = "local") {
+    allowedOrigin = process.env.originLocal
+} else {
+    allowedOrigin = process.env.originProduction
+}
+
+
 const mongoDbUrl = process.env.mongoDbUrl as string
-const port = 8080
+const port = process.env.port
 const app = express()
+const __dirname = path.resolve()
 const sessionSecret = process.env.sessionSecret || "default secret"
 
 
 //middlewares
+app.use(express.static(path.join(__dirname, "../frontend/dist")))
 app.use(express.json())
 
 app.set("trust proxy", 1) // important if behind proxy ( I've used NGINX reverse proxy to handle requests.)
@@ -33,53 +48,57 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 86400000,
-        sameSite: "none",
-        secure: true,
+        secure: false,
+        sameSite: "lax",
         httpOnly: true,
     }
 }))
-const allowedOrign1 = process.env.allowedOrigin1
-const allowedOrign2 = process.env.allowedOrigin2
+
+
 app.use(cors({
     // I'm allowing all the origin domains
-    origin: (origin, callback) => {
-        const allowed = [allowedOrign1, allowedOrign2]
-        if (!origin || allowed.includes(origin)) {
-            callback(null, origin)
-        } else {
-            callback(new Error("Origin not allowed."))
-        }
-    },
+    origin: allowedOrigin,
     credentials: true,
 }))
 
 
+/* api routes */
+
 // add todo
-app.post("/addTodoItem", addTodoItem)
+app.post("/api/v1/addTodoItem", addTodoItem)
 
 // get todo list
-app.get("/getTodoList", getTodoList)
+app.get("/api/v1/getTodoList", getTodoList)
 
 // edit text of todo item
-app.patch("/editTodoItem", editTodoItem)
+app.patch("/api/v1/editTodoItem", editTodoItem)
 
 // remove a todo item
-app.delete("/deleteTodoItem", deleteTodoItem)
+app.delete("/api/v1/deleteTodoItem", deleteTodoItem)
 
 // search todo items
-app.get("/search", search)
+app.get("/api/v1/search", search)
 
-// register user
-app.post("/register", register)
+// request registration
+app.post("/api/v1/requestRegistration", requestRegistration)
+//
+// authorize registration
+app.get("/api/v1/authorizeRegistration/:token", authorizeRegistration)
 
 // login user
-app.post("/login", login)
+app.post("/api/v1/login", login)
 
 // New Password (forgot password)
-app.post("/requestNewPassword", requestNewPassword)
+app.post("/api/v1/requestNewPassword", requestNewPassword)
 
 // authorize new Password
-app.post("/authorizeNewPassword", authorizeNewPassword)
+app.post("/api/v1/authorizeNewPassword", authorizeNewPassword)
+
+
+
+app.get("*splat", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"))
+})
 
 
 //making database connection

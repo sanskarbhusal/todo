@@ -1,10 +1,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
-
-const url = import.meta.env.VITE_url2
+import url from "../../utils"
 
 export default function PasswordForm() {
-
     // state hooks
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
