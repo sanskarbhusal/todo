@@ -10,17 +10,14 @@ dotenv.config()
 
 
 let apiURL: string
-let origin: string
 let env: string
 
 if (process.env.type === "local") {
     env = process.env.type || "local"
-    origin = process.env.originLocal || ""
-    apiURL = process.env.apiURLLocal || ""
+    apiURL = process.env.URLLocal || ""
 } else {
     env = process.env.type || "local"
-    origin = process.env.originLocal || ""
-    apiURL = process.env.apiURLProduction || ""
+    apiURL = process.env.URLProduction || ""
 }
 
 
@@ -477,7 +474,7 @@ const authorizeRegistration = async (req: Request, res: Response) => {
             await new User({ email, firstname, lastname, password: hashedPassword }).save()
             await new UsersTodoList({ email, todoList: [] }).save()
             return res.status(200).send(`
-        <div>Account Registered. Goto <a href=${origin} >login</a>page.</div>
+        <div>Account Registered. Goto <a href=${apiURL} >login</a> page.</div>
                 `)
         } else {
             return res.status(409).json({ message: "Session corrupted. Please reinitiate registration" })
