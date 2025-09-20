@@ -476,7 +476,9 @@ const authorizeRegistration = async (req: Request, res: Response) => {
             const hashedPassword = await bcrypt.hash(password!, 10)
             await new User({ email, firstname, lastname, password: hashedPassword }).save()
             await new UsersTodoList({ email, todoList: [] }).save()
-            return res.status(200).json({ message: "success" })
+            return res.status(200).send(`
+        <div>Account Registered. Goto <a href=${origin} >login</a>page.</div>
+                `)
         } else {
             return res.status(409).json({ message: "Session corrupted. Please reinitiate registration" })
         }
