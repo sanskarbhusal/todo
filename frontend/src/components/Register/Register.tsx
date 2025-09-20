@@ -5,11 +5,11 @@ import StaticPage from "../StaticPage"
 
 export default function Register() {
     // state hooks
-    const [firstname, setFirstname] = useState("test")
-    const [lastname, setLastname] = useState("test")
-    const [email, setEmail] = useState("test@gmail.com")
-    const [password, setPassword] = useState("admin123")
-    const [cpassword, setCpassword] = useState("admin123")
+    const [firstname, setFirstname] = useState("")
+    const [lastname, setLastname] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [cpassword, setCpassword] = useState("")
     const [error, setError] = useState({ message: "your message", happened: false })
     const [registrationStatus, setRegistrationStatus] = useState(0)
 
