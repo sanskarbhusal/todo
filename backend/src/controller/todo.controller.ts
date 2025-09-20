@@ -15,12 +15,12 @@ let env: string
 
 if (process.env.type === "local") {
     env = process.env.type || "local"
-    origin = process.env.originLocal || "http://localhost:5173"
-    apiURL = process.env.apiURLLocal || "http://localhost:8080"
+    origin = process.env.originLocal || ""
+    apiURL = process.env.apiURLLocal || ""
 } else {
     env = process.env.type || "local"
-    origin = process.env.originLocal || "http://localhost:5173"
-    apiURL = process.env.apiURLProduction || "https://localhost:8080"
+    origin = process.env.originLocal || ""
+    apiURL = process.env.apiURLProduction || ""
 }
 
 

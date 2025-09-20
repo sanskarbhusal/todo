@@ -56,8 +56,6 @@ app.use(session({
 
 
 app.use(cors({
-    // I'm allowing all the origin domains
-    origin: allowedOrigin,
     credentials: true,
 }))
 
