@@ -12,6 +12,8 @@ import {
     search,
     login,
     requestRegistration,
+    googleLogin,
+    googleRegistration,
     authorizeRegistration,
     requestNewPassword,
     authorizeNewPassword
@@ -20,13 +22,12 @@ import {
 
 dotenv.config()
 
-
-let allowedOrigin
+let allowedOrigin: string
 
 if (process.env.type = "local") {
-    allowedOrigin = process.env.originLocal
+    allowedOrigin = process.env.originLocal || "http://localhost:5173"
 } else {
-    allowedOrigin = process.env.originProduction
+    allowedOrigin = process.env.originProduction as string
 }
 
 
@@ -38,6 +39,10 @@ const sessionSecret = process.env.sessionSecret || "default secret"
 
 
 //middlewares
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 app.use(express.static(path.join(__dirname, "../frontend/dist")))
 app.use(express.json())
 
@@ -52,11 +57,6 @@ app.use(session({
         sameSite: "lax",
         httpOnly: true,
     }
-}))
-
-
-app.use(cors({
-    credentials: true,
 }))
 
 
@@ -92,12 +92,15 @@ app.post("/api/v1/requestNewPassword", requestNewPassword)
 // authorize new Password
 app.post("/api/v1/authorizeNewPassword", authorizeNewPassword)
 
-
-
 app.get("*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"))
 })
 
+// Google login
+app.get("/api/v1/google/login", googleLogin)
+
+// Google register
+app.get("/api/v1/google/login", googleRegistration)
 
 //making database connection
 mongoose.connect(mongoDbUrl).then(() => {

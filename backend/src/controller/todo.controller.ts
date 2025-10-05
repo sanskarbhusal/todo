@@ -13,15 +13,21 @@ let apiURL: string
 let env: string
 
 if (process.env.type === "local") {
-    env = process.env.type || "local"
+    env = process.env.type || ""
     apiURL = process.env.URLLocal || ""
 } else {
-    env = process.env.type || "local"
+    env = process.env.type || ""
     apiURL = process.env.URLProduction || ""
 }
 
 
 import type { Request, Response } from "express"
+
+// working
+const googleRegistration = (req: Request, res: Response) => {
+
+}
+
 
 const requestNewPassword = async (req: Request, res: Response) => {
 
@@ -380,7 +386,6 @@ const login = async (req: Request, res: Response) => {
 }
 
 
-// working
 const requestRegistration = async (req: Request, res: Response) => {
 
     const BodyShape = zod.object({
