@@ -2,7 +2,7 @@ import { User, UsersTodoList, LeasedEmail } from "../model/todo.model.js"
 import zod from "zod"
 import bcrypt from "bcrypt"
 import { v4 as uuidv4 } from "uuid"
-import sendMail from "../utils/sendOTP.ts"
+import sendMail from "../utils/sendOTP.js"
 import dotenv from "dotenv"
 
 
@@ -418,14 +418,12 @@ const requestRegistration = async (req: Request, res: Response) => {
             req.session.lastname = lastname
             req.session.email = email
             req.session.password = password
-            let token: string
+            const token = uuidv4()
+            req.session.token = token
+
             if (env === "local") {
-                token = Math.floor(Math.random() * 1000000) + ""
-                req.session.token = token
                 return res.status(308).json({ message: "Email available", redirectURL: `${apiURL}/api/v1/authorizeRegistration/${token}` })
             } else {
-                token = uuidv4()
-                req.session.token = token
                 sendMail(req.session.firstname!, req.session.email!, "authorizeRegistration", 0, `${apiURL}/api/v1/authorizeRegistration/${token}`)
                 return res.status(200).json({ message: "Success. Check your mail" })
             }
