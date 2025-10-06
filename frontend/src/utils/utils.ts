@@ -1,4 +1,4 @@
-const envType = import.meta.env.VITE_env
+const envType = import.meta.env.VITE_envType
 
 let apiURL: string
 if (envType === "local") {
